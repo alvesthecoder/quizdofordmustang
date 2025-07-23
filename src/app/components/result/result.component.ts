@@ -34,7 +34,7 @@ import jsPDF from 'jspdf';
                 <div class="col-md-6">
                   <div class="model-viewer-container">
                     <model-viewer
-                      src="assets/models_3d/ps1_low-poly_2024_ford_mustang_dark_horse.circ"
+                      src="assets/models_3d/ps1_low-poly_2024_ford_mustang_dark_horse.glb"
                       [alt]="'Mustang ' + getMustangYear()"
                       auto-rotate
                       camera-controls

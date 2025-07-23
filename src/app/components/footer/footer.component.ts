@@ -64,15 +64,13 @@ import { RouterModule } from '@angular/router';
             </small>
             
             <div class="mt-2">
-              <a routerLink="/termos" 
-                 class="text-light opacity-75 me-3 text-decoration-none">
-                <small>Termos de Serviço</small>
-              </a>
-              <a routerLink="/lgpd" 
-                 class="text-light opacity-75 text-decoration-none">
-                <small>Política de Privacidade (LGPD)</small>
-              </a>
-            </div>
+            <a href="https://www.ford.com.br/politica-de-privacidade/" 
+              class="text-light opacity-75 me-3 text-decoration-none"
+              target="_blank" 
+              rel="noopener noreferrer">
+              <small>Termos de Serviço</small>
+            </a>
+          </div>
           </div>
         </div>
       </div>

@@ -142,7 +142,7 @@ export class HeaderComponent {
     private authService: AuthService,
     private router: Router
   ) {
-    this.authService.currentUser$.subscribe(user => {
+    this.authService.currentUser$.subscribe((user: User | null) => {
       this.currentUser = user;
       this.isAdmin = user?.role === 'admin';
 
