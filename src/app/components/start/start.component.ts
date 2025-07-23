@@ -55,7 +55,7 @@ import { User } from '../../models/user.model';
                           interaction-prompt="when-focused"
                           style="width: 100%; height: 400px;"
                           exposure="1"
-                          shadow-intensity="1"
+                          shadow-intensity="1"d
                           environment-image="neutral">
                         </model-viewer>
                         <div class="carousel-caption">
