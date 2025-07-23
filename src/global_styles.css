@@ -255,3 +255,160 @@ model-viewer {
     max-height: none;
   }
 }
+
+/* Adicione estas regras ao seu arquivo CSS existente */
+
+/* Container principal do registro */
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--mustang-blue) 0%, #1a4480 100%);
+  padding: 2rem;
+}
+
+/* Card do formulário */
+.register-card {
+  background: var(--mustang-white);
+  border-radius: 15px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 30px rgba(0, 39, 77, 0.2);
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Título */
+.register-title {
+  color: var(--mustang-blue);
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+/* Campos do formulário */
+.register-form .form-control {
+  background-color: var(--mustang-gray);
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px 15px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.register-form .form-control:focus {
+  border-color: var(--mustang-blue);
+  box-shadow: 0 0 0 3px rgba(0, 39, 77, 0.1);
+}
+
+/* Labels */
+.register-form .form-label {
+  color: var(--mustang-blue);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* Botão de cadastro */
+.register-btn {
+  background: var(--mustang-blue);
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.register-btn:hover {
+  background: #1a4480;
+  transform: translateY(-2px);
+}
+
+.register-btn:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Mensagens de erro */
+.invalid-feedback {
+  color: var(--danger);
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.is-invalid {
+  border-color: var(--danger) !important;
+}
+
+/* Link para login */
+.login-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: var(--mustang-blue);
+}
+
+.login-link a {
+  color: var(--mustang-blue);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.login-link a:hover {
+  color: #1a4480;
+  text-decoration: underline;
+}
+
+/* Spinner */
+.spinner-border {
+  color: var(--mustang-white);
+}
+
+/* Mensagem de erro */
+.alert-danger {
+  background-color: rgba(220, 53, 69, 0.1);
+  border-color: rgba(220, 53, 69, 0.3);
+  color: var(--danger);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .register-container {
+    padding: 1.5rem;
+  }
+  
+  .register-card {
+    padding: 2rem;
+  }
+  
+  .register-title {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .register-card {
+    padding: 1.5rem;
+  }
+  
+  .register-title {
+    font-size: 1.6rem;
+    margin-bottom: 1.2rem;
+  }
+  
+  .register-form .form-control {
+    padding: 10px 12px;
+  }
+  
+  .register-btn {
+    padding: 10px;
+    font-size: 1rem;
+  }
+}

@@ -1,3 +1,4 @@
+
 export interface User {
   id: number;
   username: string;
@@ -16,4 +17,14 @@ export interface LoginResponse {
   token: string;
   success: boolean;
   message: string;
+}
+
+export interface UserWithCredentials extends User {
+  email?: string;
+  password?: string;
+}
+
+export interface RegisterRequest extends LoginRequest {
+  name: string;
+  email: string;
 }

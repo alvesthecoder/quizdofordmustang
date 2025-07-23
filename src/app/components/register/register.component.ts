@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-register',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
@@ -20,10 +21,42 @@ import { AuthService } from '../../services/auth.service';
                 <p class="text-muted">60 Anos de História</p>
               </div>
 
-              <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+              <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                <div class="mb-3">
+                  <label for="name" class="form-label fw-semibold">
+                    <i class="fas fa-user me-2"></i>Nome Completo
+                  </label>
+                  <input 
+                    type="text" 
+                    class="form-control"
+                    id="name"
+                    formControlName="name"
+                    [class.is-invalid]="isFieldInvalid('name')"
+                    placeholder="Digite seu nome completo">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('name')">
+                    Nome é obrigatório
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="email" class="form-label fw-semibold">
+                    <i class="fas fa-envelope me-2"></i>Email
+                  </label>
+                  <input 
+                    type="email" 
+                    class="form-control"
+                    id="email"
+                    formControlName="email"
+                    [class.is-invalid]="isFieldInvalid('email')"
+                    placeholder="Digite seu email">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
+                    Por favor, insira um email válido
+                  </div>
+                </div>
+
                 <div class="mb-3">
                   <label for="username" class="form-label fw-semibold">
-                    <i class="fas fa-user me-2"></i>Usuário ou Email
+                    <i class="fas fa-user-circle me-2"></i>Usuário
                   </label>
                   <input 
                     type="text" 
@@ -31,9 +64,9 @@ import { AuthService } from '../../services/auth.service';
                     id="username"
                     formControlName="username"
                     [class.is-invalid]="isFieldInvalid('username')"
-                    placeholder="Digite seu usuário ou email">
+                    placeholder="Digite seu usuário">
                   <div class="invalid-feedback" *ngIf="isFieldInvalid('username')">
-                    Usuário ou email é obrigatório
+                    Usuário é obrigatório
                   </div>
                 </div>
 
@@ -56,10 +89,10 @@ import { AuthService } from '../../services/auth.service';
                 <button 
                   type="submit" 
                   class="btn btn-mustang w-100 mb-3"
-                  [disabled]="loginForm.invalid || loading">
+                  [disabled]="registerForm.invalid || loading">
                   <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
-                  <i *ngIf="!loading" class="fas fa-sign-in-alt me-2"></i>
-                  {{ loading ? 'Entrando...' : 'Entrar' }}
+                  <i *ngIf="!loading" class="fas fa-user-plus me-2"></i>
+                  {{ loading ? 'Cadastrando...' : 'Cadastrar' }}
                 </button>
 
                 <div *ngIf="error" class="alert alert-danger text-center">
@@ -69,10 +102,8 @@ import { AuthService } from '../../services/auth.service';
               </form>
 
               <div class="text-center mt-3">
-                <a href="#" class="text-decoration-none" (click)="toggleMode($event)">
-                  <small>
-                    Não tem conta? Cadastrar
-                  </small>
+                <a href="/login" class="text-decoration-none">
+                  <small>Já tem uma conta? Faça login</small>
                 </a>
               </div>
             </div>
@@ -87,8 +118,8 @@ import { AuthService } from '../../services/auth.service';
     }
   `]
 })
-export class LoginComponent {
-  loginForm: FormGroup;
+export class RegisterComponent {
+  registerForm: FormGroup;
   loading = false;
   error = '';
 
@@ -97,53 +128,34 @@ export class LoginComponent {
     private authService: AuthService,
     private router: Router
   ) {
-    this.loginForm = this.fb.group({
+    this.registerForm = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
-
-    if (this.authService.isLoggedIn()) {
-      this.redirectUser();
-    }
   }
 
-  onSubmit(): void {
-    if (this.loginForm.valid) {
+  onSubmit() {
+    if (this.registerForm.valid) {
       this.loading = true;
       this.error = '';
-
-      const credentials = this.loginForm.value;
-
-      this.authService.login(credentials).subscribe({
-        next: (res) => {
+      
+      this.authService.register(this.registerForm.value).subscribe({
+        next: () => {
           this.loading = false;
-          if (res.success) {
-            this.redirectUser();
-          }
+          this.router.navigate(['/start']);
         },
         error: (err) => {
           this.loading = false;
-          this.error = err.message || 'Usuário/Email ou senha incorretos';
+          this.error = err.message || 'Erro ao cadastrar. Por favor, tente novamente.';
         }
       });
     }
   }
 
   isFieldInvalid(field: string): boolean {
-    const control = this.loginForm.get(field);
+    const control = this.registerForm.get(field);
     return !!(control && control.invalid && (control.dirty || control.touched));
-  }
-
-  toggleMode(event: Event): void {
-    event.preventDefault();
-    this.router.navigate(['/register']);
-  }
-
-  private redirectUser(): void {
-    if (this.authService.isAdmin()) {
-      this.router.navigate(['/admin']);
-    } else {
-      this.router.navigate(['/start']);
-    }
   }
 }

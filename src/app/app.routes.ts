@@ -33,6 +33,11 @@ export const routes: Routes = [
     data: { requiresAdmin: true }
   },
   {
+    path: 'register',
+    loadComponent: () =>
+      import('./components/register/register.component').then(m => m.RegisterComponent)
+  },
+  {
     path: '**',
     redirectTo: '/login'
   }
