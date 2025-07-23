@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -8,9 +8,9 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   template: `
-    <div class="min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="register-page-wrapper">
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-md-6 col-lg-4">
@@ -86,6 +86,21 @@ import { AuthService } from '../../services/auth.service';
                   </div>
                 </div>
 
+                <div class="mb-4 form-check">
+                  <input 
+                    type="checkbox" 
+                    class="form-check-input" 
+                    id="terms"
+                    formControlName="terms"
+                    [class.is-invalid]="isFieldInvalid('terms')">
+                  <label class="form-check-label" for="terms">
+                    Eu li e concordo com os <a href="#" class="text-decoration-none" (click)="openTermsModal($event)">Termos de Serviço</a> e <a href="https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm" class="text-decoration-none">Política de Privacidade</a>
+                  </label>
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('terms')">
+                    Você deve aceitar os termos e condições para se registrar
+                  </div>
+                </div>
+
                 <button 
                   type="submit" 
                   class="btn btn-mustang w-100 mb-3"
@@ -102,7 +117,7 @@ import { AuthService } from '../../services/auth.service';
               </form>
 
               <div class="text-center mt-3">
-                <a href="/login" class="text-decoration-none">
+                <a routerLink="/login" class="text-decoration-none">
                   <small>Já tem uma conta? Faça login</small>
                 </a>
               </div>
@@ -110,11 +125,133 @@ import { AuthService } from '../../services/auth.service';
           </div>
         </div>
       </div>
+
+      <!-- Modal para os Termos de Serviço -->
+      <div class="modal-backdrop" *ngIf="showTermsModal" (click)="closeTermsModal()">
+        <div class="modal-container" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h5 class="modal-title">Termos de Serviço - Mustang Quiz</h5>
+            <button type="button" class="btn-close" (click)="closeTermsModal()" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" style="white-space: pre-line;">
+            <p><strong>1. Aceitação dos Termos</strong><br>
+            Ao se registrar no Mustang Quiz, você concorda com estes Termos de Serviço e com nossa Política de Privacidade. Este quiz foi criado para testar seu conhecimento sobre a história do Ford Mustang em comemoração aos seus 60 anos.</p>
+
+            <p><strong>2. Coleta e Uso de Dados</strong><br>
+            Para participar do quiz, coletamos as seguintes informações pessoais:<br><br>
+            <strong>Nome completo</strong>: Utilizado para personalizar sua experiência no quiz e identificar seu perfil.<br><br>
+            <strong>Endereço de e-mail</strong>: Utilizado para fins de autenticação e comunicação sobre o quiz.<br><br>
+            Estes dados são armazenados localmente no seu navegador através do <strong>localStorage</strong>, uma tecnologia padrão da web que permite armazenamento temporário no seu dispositivo.</p>
+
+            <p><strong>3. Armazenamento no localStorage</strong><br>
+            Seus dados pessoais (nome e e-mail) são armazenados no localStorage do seu navegador, o que significa que:<br><br>
+            - Os dados persistem mesmo quando você fecha o navegador<br>
+            - São acessíveis apenas no dispositivo e navegador onde foram registrados<br>
+            - Podem ser removidos a qualquer momento limpando os dados do navegador</p>
+
+            <p><strong>4. Segurança dos Dados</strong><br>
+            Embora utilizemos o localStorage para armazenamento local:<br><br>
+            - Não coletamos ou armazenamos suas informações em nossos servidores<br>
+            - Recomendamos não utilizar dispositivos compartilhados para registro<br>
+            - Você é responsável pela segurança do dispositivo onde os dados estão armazenados</p>
+
+            <p><strong>5. Finalidade dos Dados</strong><br>
+            Seus dados serão utilizados exclusivamente para:<br><br>
+            - Criar e gerenciar sua conta no quiz<br>
+            - Registrar seu progresso e pontuações<br>
+            - Personalizar sua experiência de usuário</p>
+
+            <p><strong>6. Direitos do Usuário</strong><br>
+            Você pode a qualquer momento:<br><br>
+            - Visualizar os dados armazenados no localStorage do seu navegador<br>
+            - Remover completamente seus dados limpando o localStorage<br>
+            - Desistir de participar do quiz, removendo seus dados manualmente</p>
+
+            <p><strong>7. Limitações de Responsabilidade</strong><br>
+            O Mustang Quiz não se responsabiliza por:<br><br>
+            - Perda de dados devido à limpeza do localStorage pelo usuário ou navegador<br>
+            - Acesso não autorizado em dispositivos compartilhados ou públicos<br>
+            - Alterações técnicas no navegador que afetem o armazenamento local</p>
+
+            <p><strong>8. Alterações nos Termos</strong><br>
+            Estes termos podem ser atualizados periodicamente. Recomendamos verificar esta página regularmente para estar ciente de quaisquer mudanças.</p>
+
+            <p><strong>9. Contato</strong><br>
+            Para quaisquer dúvidas sobre estes termos ou tratamento de dados, entre em contato através do e-mail: quizfordmustang&#64;gmail.com</p>
+
+            <p>Ao marcar a caixa de aceitação dos termos, você confirma que leu, compreendeu e concordou com todas as condições aqui estabelecidas.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-mustang" (click)="closeTermsModal()">Entendi</button>
+          </div>
+        </div>
+      </div>
     </div>
   `,
   styles: [`
-    .min-vh-100 {
+    .register-page-wrapper {
       background: linear-gradient(135deg, var(--mustang-blue) 0%, #1a4480 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      padding-bottom: 5rem;
+    }
+
+    /* Estilos do modal personalizado */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1050;
+    }
+
+    .modal-container {
+      background: white;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      background-color: var(--mustang-blue);
+      color: white;
+      padding: 1rem;
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .modal-footer {
+      padding: 1rem;
+      border-top: 1px solid #dee2e6;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
     }
   `]
 })
@@ -122,6 +259,7 @@ export class RegisterComponent {
   registerForm: FormGroup;
   loading = false;
   error = '';
+  showTermsModal = false;
 
   constructor(
     private fb: FormBuilder,
@@ -132,15 +270,25 @@ export class RegisterComponent {
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       username: ['', Validators.required],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
+      terms: [false, Validators.requiredTrue]
     });
   }
 
+  openTermsModal(event: Event) {
+    event.preventDefault();
+    this.showTermsModal = true;
+  }
+
+  closeTermsModal() {
+    this.showTermsModal = false;
+  }
+
   onSubmit() {
-    if (this.registerForm.valid) {
+    if (this.registerForm.valid && !this.loading) {
       this.loading = true;
       this.error = '';
-      
+
       this.authService.register(this.registerForm.value).subscribe({
         next: () => {
           this.loading = false;

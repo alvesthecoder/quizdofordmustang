@@ -36,7 +36,6 @@ import { User } from '../../models/user.model';
               Olá, {{ currentUser.name }}
             </span>
 
-            <!-- botoes do modo mobile -->
             <div class="d-flex d-lg-none flex-column gap-1">
               <button 
                 *ngIf="currentUser"
@@ -63,7 +62,6 @@ import { User } from '../../models/user.model';
               </button>
             </div>
 
-            <!-- botoes do modo desk -->
             <div class="d-none d-lg-flex flex-row gap-2">
               <button 
                 *ngIf="currentUser"
@@ -109,7 +107,7 @@ import { User } from '../../models/user.model';
   `,
   styles: [`
     .navbar-mustang {
-      backdrop-filter: blur(10px);
+      background-color: #00274D;
       border-bottom: 2px solid rgba(255, 255, 255, 0.1);
     }
 

@@ -11,7 +11,7 @@ import { RouterModule } from '@angular/router';
       <div class="container">
         <div class="row align-items-center">
           <div class="col-md-6">
-            <p class="mb-0">
+            <p class="mb-0 text-white">
               <i class="fas fa-copyright me-1"></i>
               2025 Ford Brasil | Mustang Quiz - 60 Anos de História
             </p>
@@ -64,13 +64,13 @@ import { RouterModule } from '@angular/router';
             </small>
             
             <div class="mt-2">
-            <a href="https://www.ford.com.br/politica-de-privacidade/" 
-              class="text-light opacity-75 me-3 text-decoration-none"
-              target="_blank" 
-              rel="noopener noreferrer">
-              <small>Termos de Serviço</small>
-            </a>
-          </div>
+              <a href="https://www.ford.com.br/politica-de-privacidade/" 
+                 class="text-light opacity-75 me-3 text-decoration-none"
+                 target="_blank" 
+                 rel="noopener noreferrer">
+                <small>Termos de Serviço</small>
+              </a>
+            </div>
           </div>
         </div>
       </div>

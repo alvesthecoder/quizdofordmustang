@@ -26,7 +26,6 @@ import { QuizResult } from '../../models/result.model';
           </div>
         </div>
 
-        <!-- Tabela de navegação -->
         <div class="row mb-4">
           <div class="col-12">
             <ul class="nav nav-tabs" id="adminTabs" role="tablist">
@@ -70,13 +69,9 @@ import { QuizResult } from '../../models/result.model';
           </div>
         </div>
 
-        <!-- conteudo da aba -->
         <div class="tab-content" id="adminTabsContent">
-          
-          <!-- aba de questôes -->
           <div class="tab-pane fade show active" id="questions" role="tabpanel">
             <div class="row">
-              <!-- formulario de questoes -->
               <div class="col-lg-4">
                 <div class="mustang-card p-4 admin-card">
                   <h4 class="fw-bold mb-3">
@@ -135,9 +130,6 @@ import { QuizResult } from '../../models/result.model';
                         class="form-control"
                         accept=".png,.jpg,.jpeg"
                         (change)="onFileSelected($event)">
-                      <small class="form-text text-muted">
-                        Formatos aceitos: PNG, JPG, JPEG
-                      </small>
                     </div>
 
                     <div class="mb-3" *ngIf="questionForm.get('mediaType')?.value === '3d'">
@@ -147,9 +139,6 @@ import { QuizResult } from '../../models/result.model';
                         class="form-control"
                         accept=".glb,.circ,.gltf"
                         (change)="onFileSelected($event)">
-                      <small class="form-text text-muted">
-                        Formatos aceitos: GLB, CIRC, GLTF
-                      </small>
                     </div>
 
                     <input type="hidden" formControlName="mediaUrl">
@@ -206,7 +195,6 @@ import { QuizResult } from '../../models/result.model';
                 </div>
               </div>
 
-              <!-- lista de perguntas -->
               <div class="col-lg-8">
                 <div class="mustang-card p-4">
                   <h4 class="fw-bold mb-3">
@@ -272,7 +260,6 @@ import { QuizResult } from '../../models/result.model';
             </div>
           </div>
 
-          <!-- aba de resultados-->
           <div class="tab-pane fade" id="results" role="tabpanel">
             <div class="row">
               <div class="col-12">
@@ -325,7 +312,6 @@ import { QuizResult } from '../../models/result.model';
             </div>
           </div>
 
-          <!-- aba de configs -->
           <div class="tab-pane fade" id="settings" role="tabpanel">
             <div class="row">
               <div class="col-md-6">
@@ -428,17 +414,29 @@ import { QuizResult } from '../../models/result.model';
       padding-top: 100px;
     }
     
+    .nav-tabs {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
     .nav-tabs .nav-link {
-      color: #000000;
+      color: var(--mustang-white);
       border: none;
       border-bottom: 3px solid transparent;
       font-weight: 600;
+      background-color: transparent;
+      transition: all 0.3s ease;
     }
     
     .nav-tabs .nav-link.active {
-      color: #ffffff;
-      background-color: transparent;
+      color: var(--black-color);
+      background-color: var(--mustang-white);
       border-bottom-color: var(--mustang-blue);
+      font-weight: 700;
+    }
+    
+    .nav-tabs .nav-link:hover:not(.active) {
+      color: var(--mustang-white);
+      opacity: 0.8;
     }
     
     .table th {

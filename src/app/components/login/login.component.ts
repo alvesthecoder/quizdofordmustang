@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   template: `
     <div class="min-vh-100 d-flex align-items-center justify-content-center">
       <div class="container">
@@ -69,10 +69,8 @@ import { AuthService } from '../../services/auth.service';
               </form>
 
               <div class="text-center mt-3">
-                <a href="#" class="text-decoration-none" (click)="toggleMode($event)">
-                  <small>
-                    Não tem conta? Cadastrar
-                  </small>
+                <a routerLink="/register" class="text-decoration-none">
+                  <small>Não tem conta? Cadastrar</small>
                 </a>
               </div>
             </div>
@@ -132,11 +130,6 @@ export class LoginComponent {
   isFieldInvalid(field: string): boolean {
     const control = this.loginForm.get(field);
     return !!(control && control.invalid && (control.dirty || control.touched));
-  }
-
-  toggleMode(event: Event): void {
-    event.preventDefault();
-    this.router.navigate(['/register']);
   }
 
   private redirectUser(): void {
