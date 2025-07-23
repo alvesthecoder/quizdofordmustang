@@ -40,111 +40,54 @@ import { User } from '../../models/user.model';
                   </button>
                 </div>
 
-                <!-- Visualização 3D interativa do Mustang -->
-                <div class="col-md-6">
-                  <div class="model-viewer-container">
-                    <model-viewer
-                      src="assets/models_3d/ps1_low-poly_2024_ford_mustang_dark_horse.glb"
-                      alt="Modelo 3D do Mustang"
-                      auto-rotate
-                      camera-controls
-                      interaction-prompt="when-focused"
-                      style="width: 100%; height: 400px;"
-                      exposure="1"
-                      shadow-intensity="1"
-                      environment-image="neutral"
-                      disable-zoom="false">
-                    </model-viewer>
+                <!-- Carrossel de modelos 3D -->
+                <div class="col-md-6 position-relative">
+                  <div id="modelCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner model-viewer-container">
+                      <div *ngFor="let model of models; let i = index" 
+                           class="carousel-item" 
+                           [class.active]="i === activeIndex">
+                        <model-viewer
+                          [src]="model.path"
+                          [alt]="model.name"
+                          auto-rotate
+                          camera-controls
+                          interaction-prompt="when-focused"
+                          style="width: 100%; height: 400px;"
+                          exposure="1"
+                          shadow-intensity="1"
+                          environment-image="neutral">
+                        </model-viewer>
+                        <div class="carousel-caption">
+                          <h5>{{model.name}}</h5>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Controles do carrossel - Setas Grandes e Visíveis -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#modelCarousel" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#modelCarousel" data-bs-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Próximo</span>
+                    </button>
+                  </div>
+                  
+                  <!-- Indicadores de modelo -->
+                  <div class="d-flex justify-content-center mt-3">
+                    <button *ngFor="let model of models; let i = index" 
+                            class="btn btn-sm mx-1" 
+                            [class.btn-mustang]="i === activeIndex"
+                            [class.btn-outline-mustang]="i !== activeIndex"
+                            (click)="goToModel(i)">
+                      {{model.name.split(' ').pop()}}
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
-
-            <!-- Estatísticas principais -->
-            <div class="row mb-4">
-              <div class="col-md-4">
-                <div class="mustang-card p-4 text-center">
-                  <i class="fas fa-question-circle fs-2 text-primary mb-3"></i>
-                  <h3 class="fw-bold">15</h3>
-                  <p class="text-muted mb-0">Perguntas Desafiadoras</p>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="mustang-card p-4 text-center">
-                  <i class="fas fa-clock fs-2 text-warning mb-3"></i>
-                  <h3 class="fw-bold">15s</h3>
-                  <p class="text-muted mb-0">Por Pergunta</p>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="mustang-card p-4 text-center">
-                  <i class="fas fa-trophy fs-2 text-success mb-3"></i>
-                  <h3 class="fw-bold">{{ topScore }}%</h3>
-                  <p class="text-muted mb-0">Melhor Pontuação</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Funcionalidades do Quiz -->
-            <div class="mustang-card p-4">
-              <h3 class="fw-bold mb-4 text-center">
-                <i class="fas fa-star me-2"></i>
-                O que você encontrará no quiz
-              </h3>
-
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <div class="d-flex align-items-start">
-                    <i class="fas fa-cube text-primary fs-4 me-3 mt-1"></i>
-                    <div>
-                      <h5 class="fw-semibold">Modelos 3D Interativos</h5>
-                      <p class="text-muted mb-0">
-                        Explore modelos tridimensionais dos Mustangs mais icônicos da história.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                  <div class="d-flex align-items-start">
-                    <i class="fas fa-history text-primary fs-4 me-3 mt-1"></i>
-                    <div>
-                      <h5 class="fw-semibold">60 Anos de História</h5>
-                      <p class="text-muted mb-0">
-                        Desde 1964 até os dias atuais, descubra curiosidades fascinantes.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                  <div class="d-flex align-items-start">
-                    <i class="fas fa-brain text-primary fs-4 me-3 mt-1"></i>
-                    <div>
-                      <h5 class="fw-semibold">Curiosidades Exclusivas</h5>
-                      <p class="text-muted mb-0">
-                        Aprenda fatos únicos sobre cada era do Mustang.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                  <div class="d-flex align-items-start">
-                    <i class="fas fa-medal text-primary fs-4 me-3 mt-1"></i>
-                    <div>
-                      <h5 class="fw-semibold">Certificado PDF</h5>
-                      <p class="text-muted mb-0">
-                        Receba um certificado personalizado com seus resultados.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
           </div>
         </div>
       </div>
@@ -157,13 +100,76 @@ import { User } from '../../models/user.model';
     .model-viewer-container {
       width: 100%;
       height: 400px;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    .carousel-control-prev, .carousel-control-next {
+      width: 50px;
+      height: 50px;
+      background-color: var(--mustang-blue);
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.9;
+      transition: all 0.3s ease;
+    }
+    .carousel-control-prev {
+      left: -25px;
+    }
+    .carousel-control-next {
+      right: -25px;
+    }
+    .carousel-control-prev:hover, .carousel-control-next:hover {
+      opacity: 1;
+      transform: translateY(-50%) scale(1.1);
+    }
+    .carousel-caption {
+      background-color: rgba(0, 39, 77, 0.8);
+      border-radius: 5px;
+      padding: 8px 15px;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: auto;
+    }
+    .btn-outline-mustang {
+      border: 1px solid var(--mustang-blue);
+      color: var(--mustang-blue);
+      background: transparent;
+    }
+    .btn-outline-mustang:hover {
+      background: var(--mustang-blue);
+      color: white;
+    }
+    @media (max-width: 768px) {
+      .carousel-control-prev {
+        left: 10px;
+      }
+      .carousel-control-next {
+        right: 10px;
+      }
     }
   `]
 })
 export class StartComponent implements OnInit {
   currentUser: User | null = null;
   topScore = 0;
-  modelUrl: string = 'assets/models/mustang.glb';
+  activeIndex = 0;
+  models = [
+    { 
+      path: 'assets/models_3d/ps1_low-poly_2024_ford_mustang_dark_horse.glb',
+      name: 'Mustang Dark Horse 2024'
+    },
+    { 
+      path: 'assets/models_3d/ford_mustang_2005_lowpoly.circ',
+      name: 'Mustang GT 2005'
+    },
+    { 
+      path: 'assets/models_3d/low_poly_ford_mustang_65.circ',
+      name: 'Mustang 1965'
+    }
+  ];
 
   constructor(
     private authService: AuthService,
@@ -175,6 +181,10 @@ export class StartComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadTopScore();
+  }
+
+  goToModel(index: number): void {
+    this.activeIndex = index;
   }
 
   startQuiz(): void {
