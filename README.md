@@ -58,7 +58,6 @@ Abra um Pull Request
 Distribuído sob a licença MIT. Veja LICENSE para mais informações.
 
 ⚠️ Configurações Importantes
-Configure as credenciais da API Google em environment.ts
 
 Modelos 3D devem estar no formato compatível com o Google Model Viewer
 
