@@ -1,27 +1,50 @@
-Quiz do Ford Mustang 🚗
+# Quiz do Ford Mustang 🚗
+
 Projeto Angular interativo sobre a história do Ford Mustang com visualização 3D, autenticação de usuários e painel administrativo.
 
-Badge Badge
+![Badge](https://img.shields.io/badge/Angular-v16+-DD0031?style=for-the-badge&logo=angular)
+![Badge](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-📌 Pré-requisitos
+## 📌 Pré-requisitos
+
 Antes de começar, verifique se você possui:
 
-Node.js v16+
-Angular CLI (npm install -g @angular/cli)
-Git (opcional para contribuição)
-🚀 Instalação e Execução
-Clone o repositório: bash git clone https://github.com/alvesthecoder/quizdofordmustang.git cd quizdofordmustang Instale as dependências:
-bash npm install Execute o servidor de desenvolvimento:
+- Node.js v16+
+- Angular CLI (`npm install -g @angular/cli`)
+- Git (opcional para contribuição)
 
-bash ng serve Acesse o projeto em: http://localhost:4200
+## 🚀 Instalação e Execução
 
-✨ Funcionalidades Principais Recurso Descrição Visualização 3D Modelos interativos com Google Model Viewer Autenticação Login via Google API Geração de PDF Exportação de resultados em PDF Controle de Áudio Player com funções play/pause Painel Admin Gerenciamento de conteúdo e usuários 🛠 Tecnologias Utilizadas Frontend: Angular 16+, TypeScript, SCSS
+1. Clone o repositório:
+bash:
+git clone https://github.com/alvesthecoder/quizdofordmustang.git
+cd quizdofordmustang
+Instale as dependências:
+
+bash:
+npm install
+Execute o servidor de desenvolvimento:
+
+bash:
+ng serve
+Acesse o projeto em: http://localhost:4200
+
+✨ Funcionalidades Principais
+Recurso	Descrição
+Visualização 3D	Modelos interativos com Google Model Viewer
+Autenticação	Login via Google API
+Geração de PDF	Exportação de resultados em PDF
+Controle de Áudio	Player com funções play/pause
+Painel Admin	Gerenciamento de conteúdo e usuários
+🛠 Tecnologias Utilizadas
+Frontend: Angular 16+, TypeScript, SCSS
 
 APIs: Google Viewer, Google Auth
 
-Bibliotecas: jsPDF
+Bibliotecas: jsPDF, Howler.js
 
-🤝 Como Contribuir Faça um fork do projeto
+🤝 Como Contribuir
+Faça um fork do projeto
 
 Crie sua branch (git checkout -b feature/nova-funcionalidade)
 
@@ -31,9 +54,11 @@ Push para a branch (git push origin feature/nova-funcionalidade)
 
 Abra um Pull Request
 
-📄 Licença Distribuído sob a licença MIT. Veja LICENSE para mais informações.
+📄 Licença
+Distribuído sob a licença MIT. Veja LICENSE para mais informações.
 
-⚠️ Configurações Importantes Configure as credenciais da API Google em environment.ts
+⚠️ Configurações Importantes
+Configure as credenciais da API Google em environment.ts
 
 Modelos 3D devem estar no formato compatível com o Google Model Viewer
 
