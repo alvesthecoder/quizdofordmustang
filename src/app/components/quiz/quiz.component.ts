@@ -307,7 +307,7 @@ export class QuizComponent implements OnInit, OnDestroy {
     const answer: UserAnswer = {
       questionId: this.currentQuestion.id,
       selectedAnswer: this.selectedAnswer,
-      isCorrect: this.hasSelectedAnswer && this.selectedAnswer === this.currentQuestion.answer,
+      isCorrect: this.hasSelectedAnswer && this.selectedAnswer === this.currentQuestion!.answer,
       timeSpent,
       question: this.currentQuestion.question,
       correctAnswer: this.currentQuestion.answer,
