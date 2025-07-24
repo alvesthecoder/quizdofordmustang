@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
 import { QuizService } from '../../services/quiz.service';
+import { AuthService } from '../../services/auth.service';
 import { Question, QuizSession, UserAnswer } from '../../models/question.model';
 
 @Component({
@@ -211,7 +212,8 @@ export class QuizComponent implements OnInit, OnDestroy {
 
   constructor(
     private quizService: QuizService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -275,7 +277,8 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   selectAnswer(answer: string): void {
-    if (!this.answerSubmitted && !this.showResults) {
+    // Permite seleção para qualquer usuário logado (admin ou normal)
+    if (!this.answerSubmitted && !this.showResults && this.authService.canTakeQuiz()) {
       this.selectedAnswer = answer;
       this.hasSelectedAnswer = true;
       this.showNoAnswerWarning = false;
@@ -295,6 +298,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   private submitAnswer(): void {
     if (!this.currentQuestion || this.answerSubmitted) return;
 
+    // Garante que o feedback funcione para todos os tipos de usuário
     this.answerSubmitted = true;
     this.stopTimer();
 
@@ -312,11 +316,15 @@ export class QuizComponent implements OnInit, OnDestroy {
 
     this.quizService.submitAnswer(answer).subscribe({
       next: (isCorrect) => {
+        // Feedback deve aparecer independente do tipo de usuário
         this.isCurrentAnswerCorrect = this.hasSelectedAnswer && isCorrect;
         this.showResults = true;
       },
       error: (error) => {
         console.error('Error submitting answer:', error);
+        // Mesmo em caso de erro, mostra o feedback
+        this.isCurrentAnswerCorrect = this.hasSelectedAnswer && this.selectedAnswer === this.currentQuestion.answer;
+        this.showResults = true;
       }
     });
   }

@@ -197,4 +197,9 @@ export class AuthService {
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
+
+  // Método para verificar se o usuário atual pode fazer quiz
+  canTakeQuiz(): boolean {
+    return this.isLoggedIn(); // Tanto admin quanto usuário normal podem fazer quiz
+  }
 }
