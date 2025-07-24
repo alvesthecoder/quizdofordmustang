@@ -276,26 +276,30 @@ export class QuizComponent implements OnInit, OnDestroy {
 
     const timeSpent = Math.round((Date.now() - this.questionStartTime) / 1000);
     
+    // Se não selecionou resposta, considera como incorreta
+    const wasAnswered = this.selectedAnswer !== null;
+    const isCorrect = wasAnswered && this.selectedAnswer === this.currentQuestion.answer;
+    
     const answer: UserAnswer = {
       questionId: this.currentQuestion.id,
       selectedAnswer: this.selectedAnswer,
-      isCorrect: this.selectedAnswer !== null && this.selectedAnswer === this.currentQuestion!.answer,
+      isCorrect: isCorrect,
       timeSpent,
       question: this.currentQuestion.question,
       correctAnswer: this.currentQuestion.answer,
-      wasAnswered: this.selectedAnswer !== null
+      wasAnswered: wasAnswered
     };
 
     this.quizService.submitAnswer(answer).subscribe({
-      next: (isCorrect) => {
+      next: () => {
         // Feedback deve aparecer independente do tipo de usuário
-        this.isCurrentAnswerCorrect = this.selectedAnswer !== null && isCorrect;
+        this.isCurrentAnswerCorrect = isCorrect;
         this.showResults = true;
       },
       error: (error) => {
         console.error('Error submitting answer:', error);
         // Mesmo em caso de erro, mostra o feedback
-        this.isCurrentAnswerCorrect = this.selectedAnswer !== null && this.selectedAnswer === this.currentQuestion!.answer;
+        this.isCurrentAnswerCorrect = isCorrect;
         this.showResults = true;
       }
     });
@@ -352,28 +356,18 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   getResultIcon(): string {
-    if (this.selectedAnswer === null) {
-      return 'fas fa-question-circle';
-    }
     return this.isCurrentAnswerCorrect ? 'fas fa-check-circle' : 'fas fa-times-circle';
   }
 
   getResultTitle(): string {
-    if (this.selectedAnswer === null) {
-      return '⚠️ Tempo Esgotado!';
-    }
-    return this.isCurrentAnswerCorrect ? '✔️ Correto!' : '❌ Incorreto!';
+    return this.isCurrentAnswerCorrect ? '✅ Parabéns! Resposta correta.' : '❌ Ops! Resposta errada.';
   }
 
   getResultMessage(): string {
-    if (this.selectedAnswer === null) {
-      return 'Você não selecionou nenhuma resposta. A resposta correta é: ' + this.currentQuestion?.answer;
-    }
-    
     if (this.isCurrentAnswerCorrect) {
-      return 'Parabéns! Você conhece bem a história do Mustang.';
+      return 'Você conhece bem a história do Mustang!';
     } else {
-      return 'A resposta correta é: ' + this.currentQuestion?.answer;
+      return `A resposta correta é: ${this.currentQuestion?.answer}`;
     }
   }
 }
