@@ -91,9 +91,9 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
 
               <!-- RESULTADOS E CURIOSIDADES -->
               <div *ngIf="showResults" class="mt-4 fade-in">
-                <div class="alert" 
-                     [class.alert-success]="selectedAnswer !== null && isCurrentAnswerCorrect" 
-                     [class.alert-danger]="selectedAnswer !== null && !isCurrentAnswerCorrect">
+                <div class="alert"
+                     [class.alert-success]="isCurrentAnswerCorrect"
+                     [class.alert-danger]="!isCurrentAnswerCorrect">
                   <h5 class="alert-heading">
                     <i [class]="getResultIcon()" class="me-2"></i>
                     {{ getResultTitle() }}
@@ -253,6 +253,7 @@ export class QuizComponent implements OnInit, OnDestroy {
 
   private timeUp(): void {
     if (!this.answerSubmitted) {
+      this.stopTimer(); // Para o timer quando o tempo esgota
       this.submitAnswer();
     }
   }
@@ -261,6 +262,7 @@ export class QuizComponent implements OnInit, OnDestroy {
     // Permite seleção para qualquer usuário logado (admin ou normal)
     if (!this.answerSubmitted && !this.showResults && this.authService.canTakeQuiz()) {
       this.selectedAnswer = answer;
+      this.stopTimer(); // Para o timer imediatamente quando resposta é selecionada
       this.submitAnswer();
     }
   }
@@ -350,14 +352,24 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   getResultIcon(): string {
+    if (this.selectedAnswer === null) {
+      return 'fas fa-question-circle';
+    }
     return this.isCurrentAnswerCorrect ? 'fas fa-check-circle' : 'fas fa-times-circle';
   }
 
   getResultTitle(): string {
+    if (this.selectedAnswer === null) {
+      return '⚠️ Tempo Esgotado!';
+    }
     return this.isCurrentAnswerCorrect ? '✔️ Correto!' : '❌ Incorreto!';
   }
 
   getResultMessage(): string {
+    if (this.selectedAnswer === null) {
+      return 'Você não selecionou nenhuma resposta. A resposta correta é: ' + this.currentQuestion?.answer;
+    }
+    
     if (this.isCurrentAnswerCorrect) {
       return 'Parabéns! Você conhece bem a história do Mustang.';
     } else {
