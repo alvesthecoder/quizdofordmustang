@@ -69,10 +69,10 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                     <div 
                       *ngFor="let option of currentQuestion.options; let i = index"
                       class="quiz-option"
-                      [class.selected]="selectedAnswer === option"
+                      [class.selected]="selectedAnswer === option && !showResults"
                       [class.correct]="showResults && option === currentQuestion.answer"
-                     [class.incorrect]="showResults && selectedAnswer.trim() !== '' && selectedAnswer === option && option !== currentQuestion.answer"
-                     [class.disabled]="showResults"
+                      [class.incorrect]="showResults && selectedAnswer === option && option !== currentQuestion.answer && hasSelectedAnswer"
+                      [class.disabled]="showResults"
                       (click)="selectAnswer(option)"
                       [style.pointer-events]="showResults ? 'none' : 'auto'">
                       <div class="d-flex align-items-center">
@@ -80,7 +80,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                         <span>{{ option }}</span>
                         <i *ngIf="showResults && option === currentQuestion.answer" 
                            class="fas fa-check-circle text-success ms-auto"></i>
-                        <i *ngIf="showResults && selectedAnswer.trim() !== '' && selectedAnswer === option && option !== currentQuestion.answer" 
+                        <i *ngIf="showResults && selectedAnswer === option && option !== currentQuestion.answer && hasSelectedAnswer" 
                            class="fas fa-times-circle text-danger ms-auto"></i>
                       </div>
                     </div>
@@ -97,9 +97,9 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
               <!-- RESULTADOS E CURIOSIDADES -->
               <div *ngIf="showResults" class="mt-4 fade-in">
                 <div class="alert" 
-                     [class.alert-success]="selectedAnswer.trim() !== '' && isCurrentAnswerCorrect" 
-                     [class.alert-danger]="selectedAnswer.trim() !== '' && !isCurrentAnswerCorrect" 
-                     [class.alert-warning]="selectedAnswer.trim() === ''">
+                     [class.alert-success]="hasSelectedAnswer && isCurrentAnswerCorrect" 
+                     [class.alert-danger]="hasSelectedAnswer && !isCurrentAnswerCorrect" 
+                     [class.alert-warning]="!hasSelectedAnswer">
                   <h5 class="alert-heading">
                     <i [class]="getResultIcon()" class="me-2"></i>
                     {{ getResultTitle() }}
@@ -125,7 +125,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
               </div>
 
               <!-- BOTAO PARA AVANCAR SEM RESPOSTA -->
-              <div *ngIf="!showResults && selectedAnswer.trim() === '' && timeLeft > 0 && !answerSubmitted" class="text-center mt-4">
+              <div *ngIf="!showResults && !hasSelectedAnswer && timeLeft > 0 && !answerSubmitted" class="text-center mt-4">
                 <button class="btn btn-mustang" (click)="attemptToAdvance()">
                   <i class="fas fa-arrow-right me-2"></i>
                   {{ isLastQuestion ? 'Finalizar Quiz' : 'Próxima Pergunta' }}
@@ -197,7 +197,8 @@ export class QuizComponent implements OnInit, OnDestroy {
   currentQuestionIndex = 0;
   totalQuestions = 15;
 
-  selectedAnswer = '';
+  selectedAnswer: string | null = null;
+  hasSelectedAnswer = false;
   showResults = false;
   isCurrentAnswerCorrect = false;
   isLastQuestion = false;
@@ -237,7 +238,8 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   private resetQuestion(): void {
-    this.selectedAnswer = '';
+    this.selectedAnswer = null;
+    this.hasSelectedAnswer = false;
     this.showResults = false;
     this.isCurrentAnswerCorrect = false;
     this.showNoAnswerWarning = false;
@@ -273,18 +275,17 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   selectAnswer(answer: string): void {
-    if (!this.answerSubmitted) {
+    if (!this.answerSubmitted && !this.showResults) {
       this.selectedAnswer = answer;
+      this.hasSelectedAnswer = true;
       this.showNoAnswerWarning = false;
       this.submitAnswer();
     }
   }
 
   attemptToAdvance(): void {
-    if (!this.selectedAnswer.trim() && !this.answerSubmitted) {
-      // MOSTRA O AVISO DE RESPOSTA NAO SELECIONADA
+    if (!this.hasSelectedAnswer && !this.answerSubmitted) {
       this.showNoAnswerWarning = true;
-      // REMOVE O AVISO APOS 3 SEGUNDOS
       setTimeout(() => {
         this.showNoAnswerWarning = false;
       }, 3000);
@@ -294,7 +295,6 @@ export class QuizComponent implements OnInit, OnDestroy {
   private submitAnswer(): void {
     if (!this.currentQuestion || this.answerSubmitted) return;
 
-    // MARCA QUE A RESPOSTA FOI SUBMETIDA PARA EVITAR MULTIPLAS SUBMISSOES
     this.answerSubmitted = true;
     this.stopTimer();
 
@@ -302,17 +302,17 @@ export class QuizComponent implements OnInit, OnDestroy {
     
     const answer: UserAnswer = {
       questionId: this.currentQuestion.id,
-      selectedAnswer: this.selectedAnswer.trim() || null,
-      isCorrect: this.selectedAnswer.trim() !== '' && this.selectedAnswer === this.currentQuestion.answer,
+      selectedAnswer: this.selectedAnswer,
+      isCorrect: this.hasSelectedAnswer && this.selectedAnswer === this.currentQuestion.answer,
       timeSpent,
       question: this.currentQuestion.question,
       correctAnswer: this.currentQuestion.answer,
-      wasAnswered: this.selectedAnswer.trim() !== ''
+      wasAnswered: this.hasSelectedAnswer
     };
 
     this.quizService.submitAnswer(answer).subscribe({
       next: (isCorrect) => {
-        this.isCurrentAnswerCorrect = this.selectedAnswer.trim() !== '' && isCorrect;
+        this.isCurrentAnswerCorrect = this.hasSelectedAnswer && isCorrect;
         this.showResults = true;
       },
       error: (error) => {
@@ -372,23 +372,21 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   getResultIcon(): string {
-    if (!this.selectedAnswer.trim()) {
+    if (!this.hasSelectedAnswer) {
       return 'fas fa-exclamation-triangle';
     }
-    
     return this.isCurrentAnswerCorrect ? 'fas fa-check-circle' : 'fas fa-times-circle';
   }
 
   getResultTitle(): string {
-    if (!this.selectedAnswer.trim()) {
+    if (!this.hasSelectedAnswer) {
       return '⚠️ Nenhuma resposta marcada!';
     }
-    
     return this.isCurrentAnswerCorrect ? '✔️ Correto!' : '❌ Incorreto!';
   }
 
   getResultMessage(): string {
-    if (!this.selectedAnswer.trim()) {
+    if (!this.hasSelectedAnswer) {
       return 'Você não selecionou nenhuma alternativa.';
     }
     
@@ -399,4 +397,3 @@ export class QuizComponent implements OnInit, OnDestroy {
     }
   }
 }
-
