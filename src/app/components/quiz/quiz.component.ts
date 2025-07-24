@@ -72,7 +72,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                       class="quiz-option"
                       [class.selected]="selectedAnswer === option"
                       [class.correct]="showResults && option === currentQuestion.answer"
-                      [class.incorrect]="showResults && selectedAnswer === option && option !== currentQuestion.answer"
+                     [class.incorrect]="showResults && selectedAnswer === option && option !== currentQuestion.answer && selectedAnswer !== null"
                       [class.disabled]="showResults"
                       (click)="selectAnswer(option)"
                       [style.pointer-events]="showResults ? 'none' : 'auto'">
@@ -125,7 +125,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
               </div>
 
               <!-- Botão para tentar avançar sem resposta (apenas quando não há resultados) -->
-              <div *ngIf="!showResults && !selectedAnswer && timeLeft > 0" class="text-center mt-4">
+              <div *ngIf="!showResults && !selectedAnswer && timeLeft > 0 && !answerSubmitted" class="text-center mt-4">
                 <button class="btn btn-mustang" (click)="attemptToAdvance()">
                   <i class="fas fa-arrow-right me-2"></i>
                   {{ isLastQuestion ? 'Finalizar Quiz' : 'Próxima Pergunta' }}
@@ -202,6 +202,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   isCurrentAnswerCorrect = false;
   isLastQuestion = false;
   showNoAnswerWarning = false;
+  answerSubmitted = false;
 
   timeLeft = 15;
   timerSubscription?: Subscription;
@@ -241,6 +242,7 @@ export class QuizComponent implements OnInit, OnDestroy {
     this.showResults = false;
     this.isCurrentAnswerCorrect = false;
     this.showNoAnswerWarning = false;
+    this.answerSubmitted = false;
     this.questionStartTime = Date.now();
     this.startTimer();
   }
@@ -266,14 +268,13 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   private timeUp(): void {
-    if (!this.showResults) {
-      // Quando o tempo acaba, registra como não respondida se não há resposta selecionada
+    if (!this.answerSubmitted) {
       this.submitAnswer();
     }
   }
 
   selectAnswer(answer: string): void {
-    if (!this.showResults && !this.selectedAnswer) {
+    if (!this.answerSubmitted && !this.selectedAnswer) {
       this.selectedAnswer = answer;
       this.showNoAnswerWarning = false;
       this.submitAnswer();
@@ -281,7 +282,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   attemptToAdvance(): void {
-    if (!this.selectedAnswer) {
+    if (!this.selectedAnswer && !this.answerSubmitted) {
       // Mostra o aviso
       this.showNoAnswerWarning = true;
       // Remove o aviso após 3 segundos
@@ -292,8 +293,10 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   private submitAnswer(): void {
-    if (!this.currentQuestion) return;
+    if (!this.currentQuestion || this.answerSubmitted) return;
 
+    // Marca que a resposta foi submetida para evitar múltiplas submissões
+    this.answerSubmitted = true;
     this.stopTimer();
 
     const timeSpent = Math.round((Date.now() - this.questionStartTime) / 1000);
@@ -370,10 +373,6 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   getResultIcon(): string {
-    if (!this.showResults) {
-      return 'fas fa-exclamation-triangle';
-    }
-    
     if (!this.selectedAnswer) {
       return 'fas fa-exclamation-triangle';
     }
@@ -382,10 +381,6 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   getResultTitle(): string {
-    if (!this.showResults) {
-      return '⚠️ Nenhuma resposta marcada!';
-    }
-    
     if (!this.selectedAnswer) {
       return '⚠️ Nenhuma resposta marcada!';
     }
@@ -394,10 +389,6 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   getResultMessage(): string {
-    if (!this.showResults) {
-      return 'Você não selecionou nenhuma alternativa. A correta era: ' + this.currentQuestion?.answer;
-    }
-    
     if (!this.selectedAnswer) {
       return 'Você não selecionou nenhuma alternativa. A correta era: ' + this.currentQuestion?.answer;
     }

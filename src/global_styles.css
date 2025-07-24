@@ -148,6 +148,14 @@ body {
   box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
 }
 
+.quiz-option.correct:not(.selected) {
+  border-color: var(--success) !important;
+  background: var(--success) !important;
+  color: var(--mustang-white) !important;
+  animation: correctPulse 0.6s ease-in-out;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+}
+
 .quiz-option.disabled {
   opacity: 0.7;
   cursor: not-allowed;
