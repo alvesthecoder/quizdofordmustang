@@ -199,11 +199,9 @@ export class QuizComponent implements OnInit, OnDestroy {
   totalQuestions = 15;
 
   selectedAnswer: string | null = null;
-  hasSelectedAnswer = false;
   showResults = false;
   isCurrentAnswerCorrect = false;
   isLastQuestion = false;
-  showNoAnswerWarning = false;
   answerSubmitted = false;
 
   timeLeft = 15;
@@ -241,10 +239,8 @@ export class QuizComponent implements OnInit, OnDestroy {
 
   private resetQuestion(): void {
     this.selectedAnswer = null;
-    this.hasSelectedAnswer = false;
     this.showResults = false;
     this.isCurrentAnswerCorrect = false;
-    this.showNoAnswerWarning = false;
     this.answerSubmitted = false;
     this.questionStartTime = Date.now();
     this.startTimer();
@@ -280,18 +276,7 @@ export class QuizComponent implements OnInit, OnDestroy {
     // Permite seleção para qualquer usuário logado (admin ou normal)
     if (!this.answerSubmitted && !this.showResults && this.authService.canTakeQuiz()) {
       this.selectedAnswer = answer;
-      this.hasSelectedAnswer = true;
-      this.showNoAnswerWarning = false;
       this.submitAnswer();
-    }
-  }
-
-  attemptToAdvance(): void {
-    if (!this.hasSelectedAnswer && !this.answerSubmitted) {
-      this.showNoAnswerWarning = true;
-      setTimeout(() => {
-        this.showNoAnswerWarning = false;
-      }, 3000);
     }
   }
 
@@ -307,23 +292,23 @@ export class QuizComponent implements OnInit, OnDestroy {
     const answer: UserAnswer = {
       questionId: this.currentQuestion.id,
       selectedAnswer: this.selectedAnswer,
-      isCorrect: this.hasSelectedAnswer && this.selectedAnswer === this.currentQuestion!.answer,
+      isCorrect: this.selectedAnswer !== null && this.selectedAnswer === this.currentQuestion!.answer,
       timeSpent,
       question: this.currentQuestion.question,
       correctAnswer: this.currentQuestion.answer,
-      wasAnswered: this.hasSelectedAnswer
+      wasAnswered: this.selectedAnswer !== null
     };
 
     this.quizService.submitAnswer(answer).subscribe({
       next: (isCorrect) => {
         // Feedback deve aparecer independente do tipo de usuário
-        this.isCurrentAnswerCorrect = this.hasSelectedAnswer && isCorrect;
+        this.isCurrentAnswerCorrect = this.selectedAnswer !== null && isCorrect;
         this.showResults = true;
       },
       error: (error) => {
         console.error('Error submitting answer:', error);
         // Mesmo em caso de erro, mostra o feedback
-        this.isCurrentAnswerCorrect = this.hasSelectedAnswer && this.selectedAnswer === this.currentQuestion!.answer;
+        this.isCurrentAnswerCorrect = this.selectedAnswer !== null && this.selectedAnswer === this.currentQuestion!.answer;
         this.showResults = true;
       }
     });
@@ -380,24 +365,14 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   getResultIcon(): string {
-    if (!this.hasSelectedAnswer) {
-      return 'fas fa-exclamation-triangle';
-    }
     return this.isCurrentAnswerCorrect ? 'fas fa-check-circle' : 'fas fa-times-circle';
   }
 
   getResultTitle(): string {
-    if (!this.hasSelectedAnswer) {
-      return '⚠️ Nenhuma resposta marcada!';
-    }
     return this.isCurrentAnswerCorrect ? '✔️ Correto!' : '❌ Incorreto!';
   }
 
   getResultMessage(): string {
-    if (!this.hasSelectedAnswer) {
-      return 'Você não selecionou nenhuma alternativa.';
-    }
-    
     if (this.isCurrentAnswerCorrect) {
       return 'Parabéns! Você conhece bem a história do Mustang.';
     } else {
