@@ -73,7 +73,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                       [class.selected]="selectedAnswer === option"
                       [class.correct]="showResults && option === currentQuestion.answer"
                      [class.incorrect]="showResults && selectedAnswer === option && option !== currentQuestion.answer && selectedAnswer !== null"
-                      [class.disabled]="showResults"
+                    [class.incorrect]="showResults && selectedAnswer && selectedAnswer === option && option !== currentQuestion.answer"
                       (click)="selectAnswer(option)"
                       [style.pointer-events]="showResults ? 'none' : 'auto'">
                       <div class="d-flex align-items-center">
@@ -82,7 +82,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                         <i *ngIf="showResults && option === currentQuestion.answer" 
                            class="fas fa-check-circle text-success ms-auto"></i>
                         <i *ngIf="showResults && selectedAnswer === option && option !== currentQuestion.answer" 
-                           class="fas fa-times-circle text-danger ms-auto"></i>
+                      <i *ngIf="showResults && selectedAnswer && selectedAnswer === option && option !== currentQuestion.answer" 
                       </div>
                     </div>
                   </div>
@@ -97,9 +97,10 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
 
               <!-- resultados e curiosidades -->
               <div *ngIf="showResults" class="mt-4 fade-in">
-                <div class="alert" [class.alert-success]="isCurrentAnswerCorrect && selectedAnswer" 
-                     [class.alert-danger]="!isCurrentAnswerCorrect && selectedAnswer" 
-                     [class.alert-warning]="!selectedAnswer">
+                <div class="alert" 
+                     [class.alert-success]="selectedAnswer && isCurrentAnswerCorrect" 
+                     [class.alert-danger]="selectedAnswer && !isCurrentAnswerCorrect" 
+                     [class.alert-warning]="!selectedAnswer || selectedAnswer.trim() === ''">
                   <h5 class="alert-heading">
                     <i [class]="getResultIcon()" class="me-2"></i>
                     {{ getResultTitle() }}
@@ -304,7 +305,7 @@ export class QuizComponent implements OnInit, OnDestroy {
     const answer: UserAnswer = {
       questionId: this.currentQuestion.id,
       selectedAnswer: this.selectedAnswer || null,
-      isCorrect: this.selectedAnswer === this.currentQuestion.answer,
+      isCorrect: this.selectedAnswer && this.selectedAnswer === this.currentQuestion.answer,
       timeSpent,
       question: this.currentQuestion.question,
       correctAnswer: this.currentQuestion.answer,
@@ -313,7 +314,7 @@ export class QuizComponent implements OnInit, OnDestroy {
 
     this.quizService.submitAnswer(answer).subscribe({
       next: (isCorrect) => {
-        this.isCurrentAnswerCorrect = isCorrect;
+        this.isCurrentAnswerCorrect = this.selectedAnswer && isCorrect;
         this.showResults = true;
       },
       error: (error) => {
@@ -373,7 +374,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   getResultIcon(): string {
-    if (!this.selectedAnswer) {
+    if (!this.selectedAnswer || this.selectedAnswer.trim() === '') {
       return 'fas fa-exclamation-triangle';
     }
     
@@ -381,7 +382,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   getResultTitle(): string {
-    if (!this.selectedAnswer) {
+    if (!this.selectedAnswer || this.selectedAnswer.trim() === '') {
       return '⚠️ Nenhuma resposta marcada!';
     }
     
@@ -389,7 +390,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   getResultMessage(): string {
-    if (!this.selectedAnswer) {
+    if (!this.selectedAnswer || this.selectedAnswer.trim() === '') {
       return 'Você não selecionou nenhuma alternativa. A correta era: ' + this.currentQuestion?.answer;
     }
     
