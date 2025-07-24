@@ -427,3 +427,4 @@ export class RegisterComponent {
     const control = this.registerForm.get(field);
     return !!(control && control.invalid && (control.dirty || control.touched));
   }
+}
