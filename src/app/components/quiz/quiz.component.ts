@@ -14,7 +14,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
   template: `
     <div class="main-container" *ngIf="currentSession">
       <div class="container">
-        //BARRA DE PROGRESSÃO
+        <!-- BARRA DE PROGRESSÃO -->
         <div class="row mb-4">
           <div class="col-12">
             <div class="mustang-card p-3">
@@ -40,7 +40,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
         <div class="row justify-content-center" *ngIf="currentQuestion">
           <div class="col-12 col-lg-10">
             <div class="mustang-card p-5 fade-in">
-              <!--mostrador de imagem ou modelo 3D -->
+              <!-- mostrador de imagem ou modelo 3D -->
               <div class="row mb-4">
                 <div class="col-12 col-md-6 order-md-2 mb-3 mb-md-0">
                   <div class="model-viewer-container" *ngIf="currentQuestion.mediaType === '3d'">
@@ -65,17 +65,16 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                 <div class="col-12 col-md-6 order-md-1">
                   <h2 class="fw-bold mb-4">{{ currentQuestion.question }}</h2>
 
-                  <!--questionario-->
+                  <!-- questionario -->
                   <div class="answer-options">
-                    <div 
+                    <button 
                       *ngFor="let option of currentQuestion.options; let i = index"
-                      class="quiz-option"
-                      [class.selected]="selectedAnswer === option"
-                      [class.correct]="showResults && option === currentQuestion.answer"
-                      [class.incorrect]="showResults && selectedAnswer === option && option !== currentQuestion.answer"
-                      [class.disabled]="showResults"
-                      (click)="selectAnswer(option)"
-                      [style.pointer-events]="showResults || selectedAnswer ? 'none' : 'auto'">
+                      class="btn btn-option"
+                      [class.btn-selected]="selectedAnswer === option"
+                      [class.btn-correct]="showResults && option === currentQuestion.answer"
+                      [class.btn-incorrect]="showResults && selectedAnswer === option && option !== currentQuestion.answer"
+                      [disabled]="showResults"
+                      (click)="selectAnswer(option)">
                       <div class="d-flex align-items-center">
                         <span class="badge bg-primary me-3">{{ getLetter(i) }}</span>
                         <span>{{ option }}</span>
@@ -84,7 +83,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                         <i *ngIf="showResults && selectedAnswer === option && option !== currentQuestion.answer" 
                            class="fas fa-times-circle text-danger ms-auto"></i>
                       </div>
-                    </div>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -133,7 +132,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
       </div>
     </div>
 
-  <!--carregamento-->
+    <!-- carregamento -->
     <div *ngIf="!currentSession" class="main-container">
       <div class="container text-center">
         <div class="loading-spinner"></div>
@@ -151,9 +150,40 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
       overflow-y: auto;
     }
     
-    .quiz-option {
+    .btn-option {
+      width: 100%;
+      margin-bottom: 10px;
+      text-align: left;
+      padding: 12px 15px;
+      border: 2px solid var(--mustang-blue);
+      background-color: white;
+      color: var(--mustang-blue);
       transition: all 0.3s ease;
-      animation: slideIn 0.5s ease-out;
+      border-radius: 8px;
+    }
+    
+    .btn-option:hover:not(:disabled) {
+      background-color: var(--mustang-blue);
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    .btn-selected {
+      background-color: var(--mustang-blue);
+      color: white;
+      box-shadow: 0 4px 8px rgba(0, 39, 77, 0.2);
+    }
+    
+    .btn-correct {
+      background-color: var(--success);
+      color: white;
+      border-color: var(--success);
+    }
+    
+    .btn-incorrect {
+      background-color: var(--danger);
+      color: white;
+      border-color: var(--danger);
     }
     
     .timer-circle {

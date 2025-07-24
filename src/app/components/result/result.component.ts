@@ -16,8 +16,8 @@ import jsPDF from 'jspdf';
           <div class="col-lg-10">
 
             <!-- display de pontos -->
-            <div class="score-display mb-4 fade-in">
-              <i class="fas fa-trophy fs-1 mb-3"></i>
+            <div class="score-display mb-4 fade-in text-white">
+              <i class="fas fa-trophy fs-1 mb-3 text-warning"></i>
               <h1 class="display-4 fw-bold mb-3">Quiz Concluído!</h1>
               <h2 class="mb-3">{{ result?.score }} / {{ result?.totalQuestions }}</h2>
               <h3 class="mb-3">{{ result?.percentage }}% de Acertos</h3>
@@ -279,7 +279,6 @@ export class ResultComponent implements OnInit {
 
     const pdf = new jsPDF();
     
-    // Header
     pdf.setFillColor(0, 39, 77);
     pdf.rect(0, 0, 210, 40, 'F');
     
@@ -292,7 +291,6 @@ export class ResultComponent implements OnInit {
     pdf.setFont('helvetica', 'normal');
     pdf.text('Mustang Quiz - 60 Anos de História', 105, 30, { align: 'center' });
     
-    // Conteudo
     pdf.setTextColor(0, 0, 0);
     pdf.setFontSize(14);
     pdf.setFont('helvetica', 'normal');
@@ -315,7 +313,6 @@ export class ResultComponent implements OnInit {
     pdf.text('demonstrando conhecimento sobre 60 anos de tradição automotiva.', 20, currentY);
     currentY += 25;
     
-    // Resultados
     pdf.setFont('helvetica', 'bold');
     pdf.text('RESULTADOS:', 20, currentY);
     currentY += 15;
@@ -330,7 +327,6 @@ export class ResultComponent implements OnInit {
     pdf.text(`Data de conclusão: ${new Date(this.result.completedAt).toLocaleDateString('pt-BR')}`, 20, currentY);
     currentY += 25;
 
-    // Modelo do Mustang
     pdf.setFont('helvetica', 'bold');
     pdf.text('SEU MUSTANG DE CONQUISTA:', 20, currentY);
     currentY += 15;
@@ -340,7 +336,6 @@ export class ResultComponent implements OnInit {
     currentY += 10;
     pdf.text(this.getMustangDescription(), 20, currentY, { maxWidth: 170 });
     
-    // Footer
     pdf.setFillColor(0, 39, 77);
     pdf.rect(0, 270, 210, 27, 'F');
     
@@ -348,7 +343,6 @@ export class ResultComponent implements OnInit {
     pdf.setFontSize(10);
     pdf.text('© 2025 Mustang Quiz - Celebrando 60 Anos de História', 105, 285, { align: 'center' });
     
-    // Save
     pdf.save(`Certificado_Mustang_Quiz_${this.result.percentage}%.pdf`);
   }
 }
