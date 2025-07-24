@@ -323,7 +323,7 @@ export class QuizComponent implements OnInit, OnDestroy {
       error: (error) => {
         console.error('Error submitting answer:', error);
         // Mesmo em caso de erro, mostra o feedback
-        this.isCurrentAnswerCorrect = this.hasSelectedAnswer && this.selectedAnswer === this.currentQuestion.answer;
+        this.isCurrentAnswerCorrect = this.hasSelectedAnswer && this.selectedAnswer === this.currentQuestion!.answer;
         this.showResults = true;
       }
     });
