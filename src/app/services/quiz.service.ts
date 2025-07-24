@@ -218,17 +218,21 @@ export class QuizService {
     const question = session.questions[session.currentQuestionIndex];
     const isCorrect = answer.selectedAnswer === question.answer;
     
-    answer.isCorrect = isCorrect;
+    // Define se foi respondida baseado na presença de selectedAnswer
+    answer.wasAnswered = answer.selectedAnswer !== null;
+    answer.isCorrect = isCorrect && answer.wasAnswered;
     answer.question = question.question;
     answer.correctAnswer = question.answer;
+    
     session.answers.push(answer);
     
-    if (isCorrect) {
+    // Só pontua se foi respondida E está correta
+    if (isCorrect && answer.wasAnswered) {
       session.score++;
     }
 
     this.currentSessionSubject.next(session);
-    return of(isCorrect).pipe(delay(200));
+    return of(isCorrect && answer.wasAnswered).pipe(delay(200));
   }
 
   nextQuestion(): Observable<Question | null> {
@@ -260,6 +264,9 @@ export class QuizService {
       ? session.endTime.getTime() - session.startTime.getTime() 
       : 0;
 
+    // Conta perguntas não respondidas
+    const unansweredCount = session.answers.filter(answer => !answer.wasAnswered).length;
+
     const result: QuizResult = {
       id: Date.now(),
       userId: session.userId,
@@ -269,7 +276,8 @@ export class QuizService {
       percentage: Math.round((session.score / session.questions.length) * 100),
       completedAt: new Date(),
       timeSpent: Math.round(totalTime / 1000),
-      answers: session.answers
+      answers: session.answers,
+      unansweredCount
     };
 
     this.results.push(result);
@@ -354,3 +362,4 @@ export class QuizService {
     }
   }
 }
+

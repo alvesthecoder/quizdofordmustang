@@ -14,7 +14,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
   template: `
     <div class="main-container" *ngIf="currentSession">
       <div class="container">
-        <!-- BARRA DE PROGRESSÃO -->
+        //BARRA DE PROGRESSÃO
         <div class="row mb-4">
           <div class="col-12">
             <div class="mustang-card p-3">
@@ -36,11 +36,11 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
           </div>
         </div>
 
-        <!-- SELECIONADOR DE QUESTÕES -->
+        <!-- SELECIONADOR DE QUESTOES -->
         <div class="row justify-content-center" *ngIf="currentQuestion">
           <div class="col-12 col-lg-10">
             <div class="mustang-card p-5 fade-in">
-              <!-- mostrador de imagem ou modelo 3D -->
+              <!--mostrador de imagem ou modelo 3D -->
               <div class="row mb-4">
                 <div class="col-12 col-md-6 order-md-2 mb-3 mb-md-0">
                   <div class="model-viewer-container" *ngIf="currentQuestion.mediaType === '3d'">
@@ -65,7 +65,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                 <div class="col-12 col-md-6 order-md-1">
                   <h2 class="fw-bold mb-4">{{ currentQuestion.question }}</h2>
 
-                  <!-- questionário -->
+                  <!--questionario-->
                   <div class="answer-options">
                     <div 
                       *ngFor="let option of currentQuestion.options; let i = index"
@@ -74,7 +74,8 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                       [class.correct]="showResults && option === currentQuestion.answer"
                       [class.incorrect]="showResults && selectedAnswer === option && option !== currentQuestion.answer"
                       [class.disabled]="showResults"
-                      (click)="selectAnswer(option)">
+                      (click)="selectAnswer(option)"
+                      [style.pointer-events]="showResults ? 'none' : 'auto'">
                       <div class="d-flex align-items-center">
                         <span class="badge bg-primary me-3">{{ getLetter(i) }}</span>
                         <span>{{ option }}</span>
@@ -85,18 +86,26 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                       </div>
                     </div>
                   </div>
+
+                  <!-- Aviso de resposta não selecionada -->
+                  <div *ngIf="showNoAnswerWarning" class="alert alert-warning mt-3 fade-in">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Atenção!</strong> Por favor, selecione uma resposta antes de continuar.
+                  </div>
                 </div>
               </div>
 
               <!-- resultados e curiosidades -->
               <div *ngIf="showResults" class="mt-4 fade-in">
-                <div class="alert" [class.alert-success]="isCurrentAnswerCorrect" [class.alert-danger]="!isCurrentAnswerCorrect">
+                <div class="alert" [class.alert-success]="isCurrentAnswerCorrect && selectedAnswer" 
+                     [class.alert-danger]="!isCurrentAnswerCorrect && selectedAnswer" 
+                     [class.alert-warning]="!selectedAnswer">
                   <h5 class="alert-heading">
-                    <i [class]="isCurrentAnswerCorrect ? 'fas fa-check-circle' : 'fas fa-times-circle'" class="me-2"></i>
-                    {{ isCurrentAnswerCorrect ? 'Correto!' : 'Incorreto!' }}
+                    <i [class]="getResultIcon()" class="me-2"></i>
+                    {{ getResultTitle() }}
                   </h5>
                   <p class="mb-0">
-                    {{ isCurrentAnswerCorrect ? 'Parabéns! Você conhece bem a história do Mustang.' : 'A resposta correta é: ' + currentQuestion.answer }}
+                    {{ getResultMessage() }}
                   </p>
                 </div>
 
@@ -113,6 +122,14 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                     {{ isLastQuestion ? 'Ver Resultados' : 'Próxima Pergunta' }}
                   </button>
                 </div>
+              </div>
+
+              <!-- Botão para tentar avançar sem resposta (apenas quando não há resultados) -->
+              <div *ngIf="!showResults && !selectedAnswer && timeLeft > 0" class="text-center mt-4">
+                <button class="btn btn-mustang" (click)="attemptToAdvance()">
+                  <i class="fas fa-arrow-right me-2"></i>
+                  {{ isLastQuestion ? 'Finalizar Quiz' : 'Próxima Pergunta' }}
+                </button>
               </div>
             </div>
           </div>
@@ -132,7 +149,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
       </div>
     </div>
 
-    <!-- carregamento -->
+  <!--carregamento-->
     <div *ngIf="!currentSession" class="main-container">
       <div class="container text-center">
         <div class="loading-spinner"></div>
@@ -158,37 +175,19 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
     .timer-circle {
       transition: all 0.3s ease;
     }
+
+    .alert.fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
     
     @keyframes slideIn {
       from { transform: translateX(-20px); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
     }
 
-    /* Novos estilos adicionados sem alterar os existentes */
-    .model-viewer-container {
-      height: 400px;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 8px 25px rgba(0, 39, 77, 0.2);
-    }
-
-    model-viewer {
-      width: 100%;
-      height: 100%;
-      background-color: var(--mustang-gray);
-    }
-
-    .progress-bar-mustang {
-      background: var(--mustang-blue);
-      height: 8px;
-      border-radius: 4px;
-      transition: width 0.3s ease;
-    }
-
-    @media (max-width: 768px) {
-      .model-viewer-container {
-        height: 250px;
-      }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   `]
 })
@@ -202,6 +201,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   showResults = false;
   isCurrentAnswerCorrect = false;
   isLastQuestion = false;
+  showNoAnswerWarning = false;
 
   timeLeft = 15;
   timerSubscription?: Subscription;
@@ -240,6 +240,7 @@ export class QuizComponent implements OnInit, OnDestroy {
     this.selectedAnswer = '';
     this.showResults = false;
     this.isCurrentAnswerCorrect = false;
+    this.showNoAnswerWarning = false;
     this.questionStartTime = Date.now();
     this.startTimer();
   }
@@ -266,9 +267,7 @@ export class QuizComponent implements OnInit, OnDestroy {
 
   private timeUp(): void {
     if (!this.showResults) {
-      if (!this.selectedAnswer && this.currentQuestion) {
-        this.selectedAnswer = this.currentQuestion.options[0];
-      }
+      // Quando o tempo acaba, registra como não respondida se não há resposta selecionada
       this.submitAnswer();
     }
   }
@@ -276,23 +275,37 @@ export class QuizComponent implements OnInit, OnDestroy {
   selectAnswer(answer: string): void {
     if (!this.showResults && !this.selectedAnswer) {
       this.selectedAnswer = answer;
+      this.showNoAnswerWarning = false;
       this.submitAnswer();
     }
   }
 
+  attemptToAdvance(): void {
+    if (!this.selectedAnswer) {
+      // Mostra o aviso
+      this.showNoAnswerWarning = true;
+      // Remove o aviso após 3 segundos
+      setTimeout(() => {
+        this.showNoAnswerWarning = false;
+      }, 3000);
+    }
+  }
+
   private submitAnswer(): void {
-    if (!this.currentQuestion || !this.selectedAnswer) return;
+    if (!this.currentQuestion) return;
 
     this.stopTimer();
 
     const timeSpent = Math.round((Date.now() - this.questionStartTime) / 1000);
+    
     const answer: UserAnswer = {
       questionId: this.currentQuestion.id,
-      selectedAnswer: this.selectedAnswer,
+      selectedAnswer: this.selectedAnswer || null,
       isCorrect: this.selectedAnswer === this.currentQuestion.answer,
       timeSpent,
       question: this.currentQuestion.question,
-      correctAnswer: this.currentQuestion.answer
+      correctAnswer: this.currentQuestion.answer,
+      wasAnswered: !!this.selectedAnswer
     };
 
     this.quizService.submitAnswer(answer).subscribe({
@@ -355,4 +368,45 @@ export class QuizComponent implements OnInit, OnDestroy {
   getLetter(index: number): string {
     return String.fromCharCode(65 + index);
   }
+
+  getResultIcon(): string {
+    if (!this.showResults) {
+      return 'fas fa-exclamation-triangle';
+    }
+    
+    if (!this.selectedAnswer) {
+      return 'fas fa-exclamation-triangle';
+    }
+    
+    return this.isCurrentAnswerCorrect ? 'fas fa-check-circle' : 'fas fa-times-circle';
+  }
+
+  getResultTitle(): string {
+    if (!this.showResults) {
+      return '⚠️ Nenhuma resposta marcada!';
+    }
+    
+    if (!this.selectedAnswer) {
+      return '⚠️ Nenhuma resposta marcada!';
+    }
+    
+    return this.isCurrentAnswerCorrect ? '✔️ Correto!' : '❌ Incorreto!';
+  }
+
+  getResultMessage(): string {
+    if (!this.showResults) {
+      return 'Você não selecionou nenhuma alternativa. A correta era: ' + this.currentQuestion?.answer;
+    }
+    
+    if (!this.selectedAnswer) {
+      return 'Você não selecionou nenhuma alternativa. A correta era: ' + this.currentQuestion?.answer;
+    }
+    
+    if (this.isCurrentAnswerCorrect) {
+      return 'Parabéns! Você conhece bem a história do Mustang.';
+    } else {
+      return 'A resposta correta é: ' + this.currentQuestion?.answer;
+    }
+  }
 }
+

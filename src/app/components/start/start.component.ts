@@ -4,7 +4,6 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { QuizService } from '../../services/quiz.service';
 import { User } from '../../models/user.model';
-
 @Component({
   selector: 'app-start',
   standalone: true,
@@ -75,15 +74,6 @@ import { User } from '../../models/user.model';
                     </button>
                   </div>
                   
-                  <!-- Indicadores de modelo -->
-                  <div class="d-flex justify-content-center mt-3">
-                    <button *ngFor="let model of models; let i = index" 
-                            class="btn btn-sm mx-1" 
-                            [class.btn-mustang]="i === activeIndex"
-                            [class.btn-outline-mustang]="i !== activeIndex"
-                            (click)="goToModel(i)">
-                      {{model.name.split(' ').pop()}}
-                    </button>
                   </div>
                 </div>
               </div>
@@ -91,7 +81,6 @@ import { User } from '../../models/user.model';
           </div>
         </div>
       </div>
-    </div>
   `,
   styles: [`
     .main-container {

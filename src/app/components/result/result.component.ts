@@ -16,8 +16,8 @@ import jsPDF from 'jspdf';
           <div class="col-lg-10">
 
             <!-- display de pontos -->
-            <div class="score-display mb-4 fade-in text-white">
-              <i class="fas fa-trophy fs-1 mb-3 text-warning"></i>
+            <div class="score-display mb-4 fade-in">
+              <i class="fas fa-trophy fs-1 mb-3"></i>
               <h1 class="display-4 fw-bold mb-3">Quiz Concluído!</h1>
               <h2 class="mb-3">{{ result?.score }} / {{ result?.totalQuestions }}</h2>
               <h3 class="mb-3">{{ result?.percentage }}% de Acertos</h3>
@@ -34,7 +34,7 @@ import jsPDF from 'jspdf';
                 <div class="col-md-6">
                   <div class="model-viewer-container">
                     <model-viewer
-                      src="assets/models_3d/ps1_low-poly_2024_ford_mustang_dark_horse.glb"
+                      src="assets/models_3d/ps1_low-poly_2024_ford_mustang_dark_horse.circ"
                       [alt]="'Mustang ' + getMustangYear()"
                       auto-rotate
                       camera-controls
@@ -67,7 +67,7 @@ import jsPDF from 'jspdf';
               </h4>
               
               <div class="row mb-4">
-                <div class="col-md-3 text-center">
+                <div class="col-md-2 text-center">
                   <div class="border rounded p-3">
                     <i class="fas fa-clock text-primary fs-3 mb-2"></i>
                     <h5 class="fw-bold">{{ formatTime(result.timeSpent) }}</h5>
@@ -75,7 +75,7 @@ import jsPDF from 'jspdf';
                   </div>
                 </div>
                 
-                <div class="col-md-3 text-center">
+                <div class="col-md-2 text-center">
                   <div class="border rounded p-3">
                     <i class="fas fa-check-circle text-success fs-3 mb-2"></i>
                     <h5 class="fw-bold">{{ result.score }}</h5>
@@ -83,19 +83,35 @@ import jsPDF from 'jspdf';
                   </div>
                 </div>
                 
-                <div class="col-md-3 text-center">
+                <div class="col-md-2 text-center">
                   <div class="border rounded p-3">
                     <i class="fas fa-times-circle text-danger fs-3 mb-2"></i>
-                    <h5 class="fw-bold">{{ result.totalQuestions - result.score }}</h5>
+                    <h5 class="fw-bold">{{ getIncorrectCount() }}</h5>
                     <small class="text-muted">Erros</small>
                   </div>
                 </div>
+
+                <div class="col-md-2 text-center">
+                  <div class="border rounded p-3">
+                    <i class="fas fa-question-circle text-warning fs-3 mb-2"></i>
+                    <h5 class="fw-bold">{{ getUnansweredCount() }}</h5>
+                    <small class="text-muted">Não Respondidas</small>
+                  </div>
+                </div>
                 
-                <div class="col-md-3 text-center">
+                <div class="col-md-2 text-center">
                   <div class="border rounded p-3">
                     <i class="fas fa-percentage text-info fs-3 mb-2"></i>
                     <h5 class="fw-bold">{{ result.percentage }}%</h5>
                     <small class="text-muted">Aproveitamento</small>
+                  </div>
+                </div>
+
+                <div class="col-md-2 text-center">
+                  <div class="border rounded p-3">
+                    <i class="fas fa-list text-secondary fs-3 mb-2"></i>
+                    <h5 class="fw-bold">{{ result.totalQuestions }}</h5>
+                    <small class="text-muted">Total</small>
                   </div>
                 </div>
               </div>
@@ -130,7 +146,7 @@ import jsPDF from 'jspdf';
                       [attr.data-bs-toggle]="'collapse'"
                       [attr.data-bs-target]="'#answer' + i">
                       <span class="me-2">
-                        <i [class]="answer.isCorrect ? 'fas fa-check-circle text-success' : 'fas fa-times-circle text-danger'"></i>
+                        <i [class]="getAnswerIcon(answer)"></i>
                       </span>
                       Pergunta {{ i + 1 }}: {{ answer.question }}
                     </button>
@@ -143,8 +159,8 @@ import jsPDF from 'jspdf';
                       <div class="row">
                         <div class="col-md-6">
                           <p><strong>Sua resposta:</strong> 
-                            <span [class]="answer.isCorrect ? 'text-success' : 'text-danger'">
-                              {{ answer.selectedAnswer }}
+                            <span [class]="getAnswerTextClass(answer)">
+                              {{ getAnswerText(answer) }}
                             </span>
                           </p>
                           <p><strong>Resposta correta:</strong> 
@@ -154,8 +170,8 @@ import jsPDF from 'jspdf';
                         <div class="col-md-6">
                           <p><strong>Tempo gasto:</strong> {{ answer.timeSpent }}s</p>
                           <p><strong>Status:</strong> 
-                            <span [class]="answer.isCorrect ? 'text-success' : 'text-danger'">
-                              {{ answer.isCorrect ? 'Correto' : 'Incorreto' }}
+                            <span [class]="getAnswerTextClass(answer)">
+                              {{ getAnswerStatus(answer) }}
                             </span>
                           </p>
                         </div>
@@ -268,6 +284,44 @@ export class ResultComponent implements OnInit {
     }
   }
 
+  getIncorrectCount(): number {
+    if (!this.result) return 0;
+    return this.result.answers.filter(answer => answer.wasAnswered && !answer.isCorrect).length;
+  }
+
+  getUnansweredCount(): number {
+    if (!this.result) return 0;
+    return this.result.answers.filter(answer => !answer.wasAnswered).length;
+  }
+
+  getAnswerIcon(answer: any): string {
+    if (!answer.wasAnswered) {
+      return 'fas fa-question-circle text-warning';
+    }
+    return answer.isCorrect ? 'fas fa-check-circle text-success' : 'fas fa-times-circle text-danger';
+  }
+
+  getAnswerText(answer: any): string {
+    if (!answer.wasAnswered) {
+      return 'Nenhuma resposta foi marcada';
+    }
+    return answer.selectedAnswer;
+  }
+
+  getAnswerTextClass(answer: any): string {
+    if (!answer.wasAnswered) {
+      return 'text-warning';
+    }
+    return answer.isCorrect ? 'text-success' : 'text-danger';
+  }
+
+  getAnswerStatus(answer: any): string {
+    if (!answer.wasAnswered) {
+      return 'Não Respondida';
+    }
+    return answer.isCorrect ? 'Correto' : 'Incorreto';
+  }
+
   formatTime(seconds: number): string {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -279,6 +333,7 @@ export class ResultComponent implements OnInit {
 
     const pdf = new jsPDF();
     
+    // Header
     pdf.setFillColor(0, 39, 77);
     pdf.rect(0, 0, 210, 40, 'F');
     
@@ -291,6 +346,7 @@ export class ResultComponent implements OnInit {
     pdf.setFont('helvetica', 'normal');
     pdf.text('Mustang Quiz - 60 Anos de História', 105, 30, { align: 'center' });
     
+    // Conteudo
     pdf.setTextColor(0, 0, 0);
     pdf.setFontSize(14);
     pdf.setFont('helvetica', 'normal');
@@ -313,6 +369,7 @@ export class ResultComponent implements OnInit {
     pdf.text('demonstrando conhecimento sobre 60 anos de tradição automotiva.', 20, currentY);
     currentY += 25;
     
+    // Resultados
     pdf.setFont('helvetica', 'bold');
     pdf.text('RESULTADOS:', 20, currentY);
     currentY += 15;
@@ -322,11 +379,18 @@ export class ResultComponent implements OnInit {
     currentY += 10;
     pdf.text(`Aproveitamento: ${this.result.percentage}%`, 20, currentY);
     currentY += 10;
+    pdf.text(`Acertos: ${this.result.score}`, 20, currentY);
+    currentY += 10;
+    pdf.text(`Erros: ${this.getIncorrectCount()}`, 20, currentY);
+    currentY += 10;
+    pdf.text(`Não respondidas: ${this.getUnansweredCount()}`, 20, currentY);
+    currentY += 10;
     pdf.text(`Tempo total: ${this.formatTime(this.result.timeSpent)}`, 20, currentY);
     currentY += 10;
     pdf.text(`Data de conclusão: ${new Date(this.result.completedAt).toLocaleDateString('pt-BR')}`, 20, currentY);
     currentY += 25;
 
+    // Modelo do Mustang
     pdf.setFont('helvetica', 'bold');
     pdf.text('SEU MUSTANG DE CONQUISTA:', 20, currentY);
     currentY += 15;
@@ -336,6 +400,7 @@ export class ResultComponent implements OnInit {
     currentY += 10;
     pdf.text(this.getMustangDescription(), 20, currentY, { maxWidth: 170 });
     
+    // Footer
     pdf.setFillColor(0, 39, 77);
     pdf.rect(0, 270, 210, 27, 'F');
     
@@ -343,6 +408,8 @@ export class ResultComponent implements OnInit {
     pdf.setFontSize(10);
     pdf.text('© 2025 Mustang Quiz - Celebrando 60 Anos de História', 105, 285, { align: 'center' });
     
+    // Save
     pdf.save(`Certificado_Mustang_Quiz_${this.result.percentage}%.pdf`);
   }
 }
+

@@ -9,6 +9,7 @@ export interface QuizResult {
   completedAt: Date;
   timeSpent: number;
   answers: UserAnswer[];
+  unansweredCount: number; // Contador de perguntas não respondidas
 }
 //ranking de pontuação
 export interface ScoreRank {
@@ -22,8 +23,10 @@ export interface ScoreRank {
 export interface UserAnswer {
   questionId: number;
   question: string;
-  selectedAnswer: string;
+  selectedAnswer: string | null; // Permite null para respostas não marcadas
   correctAnswer: string;
   isCorrect: boolean;
   timeSpent: number;
+  wasAnswered: boolean; // Indica se a pergunta foi respondida
 }
+

@@ -25,9 +25,11 @@ export interface QuizSession {
 //seção de resposta do usuário
 export interface UserAnswer {
   questionId: number;
-  selectedAnswer: string;
+  selectedAnswer: string | null; // Permite null para respostas não marcadas
   isCorrect: boolean;
   timeSpent: number;
   question: string;
   correctAnswer: string;
+  wasAnswered: boolean; // Indica se a pergunta foi respondida
 }
+
