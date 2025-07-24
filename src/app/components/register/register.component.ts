@@ -95,7 +95,7 @@ import { AuthService } from '../../services/auth.service';
                     formControlName="terms"
                     [class.is-invalid]="isFieldInvalid('terms')">
                   <label class="form-check-label" for="terms">
-                    Eu li e concordo com os <a href="#" class="text-decoration-none" (click)="openTermsModal($event)">Termos de Serviço</a> e <a href="https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm" class="text-decoration-none">Política de Privacidade</a>
+                    Eu li e concordo com os <a href="#" class="text-decoration-none" (click)="openTermsModal($event)">Termos de Serviço</a> e <a href="https://www.planalto.gov.br/ccivil_03/_ato2015-2018/lei/l13709.htm" class="text-decoration-none">Política de Privacidade</a>
                   </label>
                   <div class="invalid-feedback" *ngIf="isFieldInvalid('terms')">
                     Você deve aceitar os termos e condições para se registrar
@@ -427,4 +427,10 @@ export class RegisterComponent {
     const control = this.registerForm.get(field);
     return !!(control && control.invalid && (control.dirty || control.touched));
   }
+
+  isResetFieldInvalid(field: string): boolean {
+    const control = this.resetForm.get(field);
+    return !!(control && control.invalid && (control.dirty || control.touched));
+  }
 }
+
