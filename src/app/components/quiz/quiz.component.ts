@@ -72,7 +72,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                       class="quiz-option"
                       [class.selected]="selectedAnswer === option && !showResults"
                       [class.correct]="showResults && option === currentQuestion.answer"
-                      [class.incorrect]="showResults && selectedAnswer === option && option !== currentQuestion.answer && selectedAnswer !== null"
+                      [class.incorrect]="showResults && selectedAnswer === option && option !== currentQuestion.answer"
                       [class.disabled]="showResults"
                       (click)="selectAnswer(option)"
                       [style.pointer-events]="showResults ? 'none' : 'auto'">
@@ -81,7 +81,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                         <span>{{ option }}</span>
                         <i *ngIf="showResults && option === currentQuestion.answer" 
                            class="fas fa-check-circle text-success ms-auto"></i>
-                        <i *ngIf="showResults && selectedAnswer === option && option !== currentQuestion.answer && selectedAnswer !== null" 
+                        <i *ngIf="showResults && selectedAnswer === option && option !== currentQuestion.answer" 
                            class="fas fa-times-circle text-danger ms-auto"></i>
                       </div>
                     </div>
