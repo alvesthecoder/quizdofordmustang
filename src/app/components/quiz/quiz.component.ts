@@ -36,7 +36,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
           </div>
         </div>
 
-        <!-- SELECIONADOR DE QUESTOES -->
+        <!-- SELECIONADOR DE QUESTÕES -->
         <div class="row justify-content-center" *ngIf="currentQuestion">
           <div class="col-12 col-lg-10">
             <div class="mustang-card p-5 fade-in">
@@ -65,15 +65,15 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                 <div class="col-12 col-md-6 order-md-1">
                   <h2 class="fw-bold mb-4">{{ currentQuestion.question }}</h2>
 
-                  <!-- questionario -->
+                  <!-- questionário -->
                   <div class="answer-options">
-                    <button 
+                    <div 
                       *ngFor="let option of currentQuestion.options; let i = index"
-                      class="btn btn-option"
-                      [class.btn-selected]="selectedAnswer === option"
-                      [class.btn-correct]="showResults && option === currentQuestion.answer"
-                      [class.btn-incorrect]="showResults && selectedAnswer === option && option !== currentQuestion.answer"
-                      [disabled]="showResults"
+                      class="quiz-option"
+                      [class.selected]="selectedAnswer === option"
+                      [class.correct]="showResults && option === currentQuestion.answer"
+                      [class.incorrect]="showResults && selectedAnswer === option && option !== currentQuestion.answer"
+                      [class.disabled]="showResults"
                       (click)="selectAnswer(option)">
                       <div class="d-flex align-items-center">
                         <span class="badge bg-primary me-3">{{ getLetter(i) }}</span>
@@ -83,7 +83,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                         <i *ngIf="showResults && selectedAnswer === option && option !== currentQuestion.answer" 
                            class="fas fa-times-circle text-danger ms-auto"></i>
                       </div>
-                    </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -150,40 +150,9 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
       overflow-y: auto;
     }
     
-    .btn-option {
-      width: 100%;
-      margin-bottom: 10px;
-      text-align: left;
-      padding: 12px 15px;
-      border: 2px solid var(--mustang-blue);
-      background-color: white;
-      color: var(--mustang-blue);
+    .quiz-option {
       transition: all 0.3s ease;
-      border-radius: 8px;
-    }
-    
-    .btn-option:hover:not(:disabled) {
-      background-color: var(--mustang-blue);
-      color: white;
-      transform: translateY(-2px);
-    }
-    
-    .btn-selected {
-      background-color: var(--mustang-blue);
-      color: white;
-      box-shadow: 0 4px 8px rgba(0, 39, 77, 0.2);
-    }
-    
-    .btn-correct {
-      background-color: var(--success);
-      color: white;
-      border-color: var(--success);
-    }
-    
-    .btn-incorrect {
-      background-color: var(--danger);
-      color: white;
-      border-color: var(--danger);
+      animation: slideIn 0.5s ease-out;
     }
     
     .timer-circle {
@@ -193,6 +162,33 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
     @keyframes slideIn {
       from { transform: translateX(-20px); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Novos estilos adicionados sem alterar os existentes */
+    .model-viewer-container {
+      height: 400px;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0, 39, 77, 0.2);
+    }
+
+    model-viewer {
+      width: 100%;
+      height: 100%;
+      background-color: var(--mustang-gray);
+    }
+
+    .progress-bar-mustang {
+      background: var(--mustang-blue);
+      height: 8px;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+      .model-viewer-container {
+        height: 250px;
+      }
     }
   `]
 })
