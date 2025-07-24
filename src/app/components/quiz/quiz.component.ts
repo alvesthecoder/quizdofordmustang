@@ -72,7 +72,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                       class="quiz-option"
                       [class.selected]="selectedAnswer === option && !showResults"
                       [class.correct]="showResults && option === currentQuestion.answer"
-                      [class.incorrect]="showResults && selectedAnswer === option && option !== currentQuestion.answer && hasSelectedAnswer"
+                      [class.incorrect]="showResults && selectedAnswer === option && option !== currentQuestion.answer && selectedAnswer !== null"
                       [class.disabled]="showResults"
                       (click)="selectAnswer(option)"
                       [style.pointer-events]="showResults ? 'none' : 'auto'">
@@ -81,16 +81,10 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                         <span>{{ option }}</span>
                         <i *ngIf="showResults && option === currentQuestion.answer" 
                            class="fas fa-check-circle text-success ms-auto"></i>
-                        <i *ngIf="showResults && selectedAnswer === option && option !== currentQuestion.answer && hasSelectedAnswer" 
+                        <i *ngIf="showResults && selectedAnswer === option && option !== currentQuestion.answer && selectedAnswer !== null" 
                            class="fas fa-times-circle text-danger ms-auto"></i>
                       </div>
                     </div>
-                  </div>
-
-                  <!-- AVISO DE RESPOSTA NAO SELECIONADA -->
-                  <div *ngIf="showNoAnswerWarning" class="alert alert-warning mt-3 fade-in">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <strong>Atenção!</strong> Por favor, selecione uma resposta antes de continuar.
                   </div>
                 </div>
               </div>
@@ -98,9 +92,8 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
               <!-- RESULTADOS E CURIOSIDADES -->
               <div *ngIf="showResults" class="mt-4 fade-in">
                 <div class="alert" 
-                     [class.alert-success]="hasSelectedAnswer && isCurrentAnswerCorrect" 
-                     [class.alert-danger]="hasSelectedAnswer && !isCurrentAnswerCorrect" 
-                     [class.alert-warning]="!hasSelectedAnswer">
+                     [class.alert-success]="selectedAnswer !== null && isCurrentAnswerCorrect" 
+                     [class.alert-danger]="selectedAnswer !== null && !isCurrentAnswerCorrect">
                   <h5 class="alert-heading">
                     <i [class]="getResultIcon()" class="me-2"></i>
                     {{ getResultTitle() }}
@@ -123,14 +116,6 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                     {{ isLastQuestion ? 'Ver Resultados' : 'Próxima Pergunta' }}
                   </button>
                 </div>
-              </div>
-
-              <!-- BOTAO PARA AVANCAR SEM RESPOSTA -->
-              <div *ngIf="!showResults && !hasSelectedAnswer && timeLeft > 0 && !answerSubmitted" class="text-center mt-4">
-                <button class="btn btn-mustang" (click)="attemptToAdvance()">
-                  <i class="fas fa-arrow-right me-2"></i>
-                  {{ isLastQuestion ? 'Finalizar Quiz' : 'Próxima Pergunta' }}
-                </button>
               </div>
             </div>
           </div>
