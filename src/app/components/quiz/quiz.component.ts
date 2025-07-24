@@ -81,8 +81,8 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                         <span>{{ option }}</span>
                         <i *ngIf="showResults && option === currentQuestion.answer" 
                            class="fas fa-check-circle text-success ms-auto"></i>
-                        <i *ngIf="showResults && selectedAnswer === option && option !== currentQuestion.answer" 
-                      <i *ngIf="showResults && selectedAnswer && selectedAnswer === option && option !== currentQuestion.answer" 
+                        <i *ngIf="showResults && selectedAnswer && selectedAnswer === option && option !== currentQuestion.answer" 
+                           class="fas fa-times-circle text-danger ms-auto"></i>
                       </div>
                     </div>
                   </div>
@@ -305,7 +305,7 @@ export class QuizComponent implements OnInit, OnDestroy {
     const answer: UserAnswer = {
       questionId: this.currentQuestion.id,
       selectedAnswer: this.selectedAnswer || null,
-      isCorrect: this.selectedAnswer && this.selectedAnswer === this.currentQuestion.answer,
+      isCorrect: !!this.selectedAnswer && this.selectedAnswer === this.currentQuestion.answer,
       timeSpent,
       question: this.currentQuestion.question,
       correctAnswer: this.currentQuestion.answer,
@@ -314,7 +314,7 @@ export class QuizComponent implements OnInit, OnDestroy {
 
     this.quizService.submitAnswer(answer).subscribe({
       next: (isCorrect) => {
-        this.isCurrentAnswerCorrect = this.selectedAnswer && isCorrect;
+        this.isCurrentAnswerCorrect = !!this.selectedAnswer && isCorrect;
         this.showResults = true;
       },
       error: (error) => {
