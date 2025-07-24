@@ -18,19 +18,19 @@ export class AuthService {
   }
 
   private initializeAuth(): void {
-    // Carrega usuário logado
+    // CARREGA USUARIO LOGADO DO LOCALSTORAGE
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
       this.currentUserSubject.next(JSON.parse(savedUser));
     }
 
-    // Carrega usuários registrados
+    // CARREGA USUARIOS REGISTRADOS DO LOCALSTORAGE
     const savedUsers = localStorage.getItem('registeredUsers');
     if (savedUsers) {
       this.registeredUsers = JSON.parse(savedUsers);
     }
 
-    // Garante que o admin existe
+    // GARANTE QUE O USUARIO ADMIN EXISTE NO SISTEMA
     if (!this.registeredUsers.some(u => u.username === 'admin')) {
       this.registeredUsers.push({
         id: 1,
@@ -48,7 +48,7 @@ export class AuthService {
     return of(null).pipe(
       delay(1000),
       map(() => {
-        // Login do admin (compatibilidade)
+        // LOGIN DO ADMIN COM COMPATIBILIDADE
         if (credentials.username === 'admin') {
           if (credentials.password !== this.adminPassword) {
             throw new Error('Senha incorreta para administrador');
@@ -57,7 +57,7 @@ export class AuthService {
           return this.createAuthResponse(this.mapToUser(admin));
         }
 
-        // Login normal (aceita email ou username)
+        // LOGIN NORMAL ACEITA EMAIL OU USERNAME
         const user = this.registeredUsers.find(u => 
           (u.username === credentials.username || u.email === credentials.username) && 
           u.password === credentials.password
@@ -76,12 +76,12 @@ export class AuthService {
     return of(null).pipe(
       delay(1000),
       map(() => {
-        // Validação dos campos
+        // VALIDACAO DOS CAMPOS OBRIGATORIOS
         if (!credentials.username || !credentials.password || !credentials.name || !credentials.email) {
           throw new Error('Todos os campos são obrigatórios');
         }
 
-        // Verifica se usuário ou email já existem
+        // VERIFICA SE USUARIO OU EMAIL JA EXISTEM
         if (this.registeredUsers.some(u => u.username === credentials.username)) {
           throw new Error('Nome de usuário já existe');
         }
@@ -90,7 +90,7 @@ export class AuthService {
           throw new Error('Email já cadastrado');
         }
 
-        // Cria novo usuário com todos os campos extras
+        // CRIA NOVO USUARIO COM TODOS OS CAMPOS
         const newUser = {
           id: Date.now(),
           username: credentials.username,
@@ -99,7 +99,6 @@ export class AuthService {
           password: credentials.password,
           role: 'user',
           createdAt: new Date(),
-          // Pode adicionar outros campos aqui sem afetar a interface
           ...credentials
         };
 
@@ -111,8 +110,41 @@ export class AuthService {
     );
   }
 
+  resetPassword(identifier: string, newPassword: string): Observable<{ success: boolean; message: string }> {
+    return of(null).pipe(
+      delay(1000),
+      map(() => {
+        // VALIDACAO DOS CAMPOS
+        if (!identifier || !newPassword) {
+          throw new Error('Email/usuário e nova senha são obrigatórios');
+        }
+
+        if (newPassword.length < 4) {
+          throw new Error('A nova senha deve ter pelo menos 4 caracteres');
+        }
+
+        // BUSCA USUARIO POR EMAIL OU USERNAME
+        const userIndex = this.registeredUsers.findIndex(u => 
+          u.email === identifier || u.username === identifier
+        );
+
+        if (userIndex === -1) {
+          throw new Error('Usuário não encontrado');
+        }
+
+        // ATUALIZA A SENHA DO USUARIO
+        this.registeredUsers[userIndex].password = newPassword;
+        this.saveRegisteredUsers();
+
+        return {
+          success: true,
+          message: 'Senha redefinida com sucesso!'
+        };
+      })
+    );
+  }
   private mapToUser(data: any): User {
-    // Filtra apenas os campos da interface User
+    // FILTRA APENAS OS CAMPOS DA INTERFACE USER
     return {
       id: data.id,
       username: data.username,
@@ -146,7 +178,7 @@ export class AuthService {
            Math.random().toString(36).substring(2, 15);
   }
 
-  // Métodos existentes (mantidos exatamente iguais)
+  // METODOS DE CONTROLE DE SESSAO
   logout(): void {
     localStorage.removeItem('currentUser');
     localStorage.removeItem('token');

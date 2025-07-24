@@ -33,7 +33,7 @@ import { User } from '../../models/user.model';
 
           <div class="navbar-nav ms-auto d-flex align-items-center">
             <span class="navbar-text text-white me-3" *ngIf="currentUser">
-              Olá, {{ currentUser.name }}
+              Olá, {{ currentUser.username }}
             </span>
 
             <div class="d-flex d-lg-none flex-column gap-1">

@@ -14,7 +14,7 @@ export class QuizService {
   private currentSessionSubject = new BehaviorSubject<QuizSession | null>(null);
   public currentSession$ = this.currentSessionSubject.asObservable();
 
-  // Banco de dados de perguntas mockado
+  // BANCO DE DADOS DE PERGUNTAS MOCKADO
   private mockQuestions: Question[] = [
     {
       id: 1,
@@ -218,7 +218,7 @@ export class QuizService {
     const question = session.questions[session.currentQuestionIndex];
     const isCorrect = answer.selectedAnswer === question.answer;
     
-    // Define se foi respondida baseado na presença de selectedAnswer
+    // DEFINE SE FOI RESPONDIDA BASEADO NA PRESENCA DE SELECTEDANSWER
     answer.wasAnswered = answer.selectedAnswer !== null;
     answer.isCorrect = isCorrect && answer.wasAnswered;
     answer.question = question.question;
@@ -226,7 +226,7 @@ export class QuizService {
     
     session.answers.push(answer);
     
-    // Só pontua se foi respondida E está correta
+    // SO PONTUA SE FOI RESPONDIDA E ESTA CORRETA
     if (isCorrect && answer.wasAnswered) {
       session.score++;
     }
@@ -264,7 +264,7 @@ export class QuizService {
       ? session.endTime.getTime() - session.startTime.getTime() 
       : 0;
 
-    // Conta perguntas não respondidas
+    // CONTA PERGUNTAS NAO RESPONDIDAS
     const unansweredCount = session.answers.filter(answer => !answer.wasAnswered).length;
 
     const result: QuizResult = {
@@ -306,7 +306,7 @@ export class QuizService {
     return of(topScores).pipe(delay(200));
   }
 
-  // Admin methods
+  // METODOS ADMINISTRATIVOS
   addQuestion(question: Omit<Question, 'id'>): Observable<Question> {
     const newQuestion: Question = {
       ...question,

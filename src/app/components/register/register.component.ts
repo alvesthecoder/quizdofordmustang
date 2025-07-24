@@ -21,7 +21,8 @@ import { AuthService } from '../../services/auth.service';
                 <p class="text-muted">60 Anos de História</p>
               </div>
 
-              <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+              <!-- FORMULARIO DE CADASTRO -->
+              <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" *ngIf="!showResetPassword">
                 <div class="mb-3">
                   <label for="name" class="form-label fw-semibold">
                     <i class="fas fa-user me-2"></i>Nome Completo
@@ -116,16 +117,81 @@ import { AuthService } from '../../services/auth.service';
                 </div>
               </form>
 
+              <!-- FORMULARIO DE RESET DE SENHA -->
+              <form [formGroup]="resetForm" (ngSubmit)="onResetPassword()" *ngIf="showResetPassword">
+                <div class="mb-3">
+                  <label for="identifier" class="form-label fw-semibold">
+                    <i class="fas fa-search me-2"></i>Email ou Usuário
+                  </label>
+                  <input 
+                    type="text" 
+                    class="form-control"
+                    id="identifier"
+                    formControlName="identifier"
+                    [class.is-invalid]="isResetFieldInvalid('identifier')"
+                    placeholder="Digite seu email ou usuário">
+                  <div class="invalid-feedback" *ngIf="isResetFieldInvalid('identifier')">
+                    Email ou usuário é obrigatório
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label for="newPassword" class="form-label fw-semibold">
+                    <i class="fas fa-key me-2"></i>Nova Senha
+                  </label>
+                  <input 
+                    type="password" 
+                    class="form-control"
+                    id="newPassword"
+                    formControlName="newPassword"
+                    [class.is-invalid]="isResetFieldInvalid('newPassword')"
+                    placeholder="Digite sua nova senha">
+                  <div class="invalid-feedback" *ngIf="isResetFieldInvalid('newPassword')">
+                    Nova senha é obrigatória (mínimo 4 caracteres)
+                  </div>
+                </div>
+
+                <button 
+                  type="submit" 
+                  class="btn btn-mustang w-100 mb-3"
+                  [disabled]="resetForm.invalid || loading">
+                  <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                  <i *ngIf="!loading" class="fas fa-key me-2"></i>
+                  {{ loading ? 'Redefinindo...' : 'Redefinir Senha' }}
+                </button>
+
+                <div *ngIf="error" class="alert alert-danger text-center">
+                  <i class="fas fa-exclamation-circle me-2"></i>
+                  {{ error }}
+                </div>
+
+                <div *ngIf="resetSuccess" class="alert alert-success text-center">
+                  <i class="fas fa-check-circle me-2"></i>
+                  {{ resetSuccess }}
+                </div>
+              </form>
               <div class="text-center mt-3">
-                <a routerLink="/login" class="text-decoration-none">
+                <a routerLink="/login" class="text-decoration-none" *ngIf="!showResetPassword">
                   <small>Já tem uma conta? Faça login</small>
                 </a>
+                
+                <div *ngIf="!showResetPassword">
+                  <a href="#" class="text-decoration-none d-block mt-2" (click)="toggleResetPassword($event)">
+                    <small>Esqueci minha senha</small>
+                  </a>
+                </div>
+                
+                <div *ngIf="showResetPassword">
+                  <a href="#" class="text-decoration-none" (click)="toggleResetPassword($event)">
+                    <small>Voltar ao cadastro</small>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
+        <!-- MODAL PARA OS TERMOS DE SERVICO -->
       <!-- Modal para os Termos de Serviço -->
       <div class="modal-backdrop" *ngIf="showTermsModal" (click)="closeTermsModal()">
         <div class="modal-container" (click)="$event.stopPropagation()">
@@ -199,7 +265,7 @@ import { AuthService } from '../../services/auth.service';
       padding-bottom: 5rem;
     }
 
-    /* Estilos do modal personalizado */
+    /* ESTILOS DO MODAL PERSONALIZADO */
     .modal-backdrop {
       position: fixed;
       top: 0;
@@ -257,21 +323,31 @@ import { AuthService } from '../../services/auth.service';
 })
 export class RegisterComponent {
   registerForm: FormGroup;
+  resetForm: FormGroup;
   loading = false;
   error = '';
   showTermsModal = false;
+  showResetPassword = false;
+  resetSuccess = '';
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router
   ) {
+    // FORMULARIO DE CADASTRO
     this.registerForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       username: ['', Validators.required],
       password: ['', Validators.required],
       terms: [false, Validators.requiredTrue]
+    });
+
+    // FORMULARIO DE RESET DE SENHA
+    this.resetForm = this.fb.group({
+      identifier: ['', Validators.required],
+      newPassword: ['', [Validators.required, Validators.minLength(4)]]
     });
   }
 
@@ -284,6 +360,23 @@ export class RegisterComponent {
     this.showTermsModal = false;
   }
 
+  toggleResetPassword(event: Event) {
+    event.preventDefault();
+    this.showResetPassword = !this.showResetPassword;
+    this.error = '';
+    this.resetSuccess = '';
+    
+    // LIMPA OS FORMULARIOS AO ALTERNAR
+    this.registerForm.reset();
+    this.resetForm.reset();
+    
+    // REDEFINE VALORES PADRAO DO FORMULARIO DE CADASTRO
+    if (!this.showResetPassword) {
+      this.registerForm.patchValue({
+        terms: false
+      });
+    }
+  }
   onSubmit() {
     if (this.registerForm.valid && !this.loading) {
       this.loading = true;
@@ -302,8 +395,40 @@ export class RegisterComponent {
     }
   }
 
+  onResetPassword() {
+    if (this.resetForm.valid && !this.loading) {
+      this.loading = true;
+      this.error = '';
+      this.resetSuccess = '';
+
+      const { identifier, newPassword } = this.resetForm.value;
+
+      this.authService.resetPassword(identifier, newPassword).subscribe({
+        next: (response) => {
+          this.loading = false;
+          this.resetSuccess = response.message;
+          
+          // LIMPA O FORMULARIO APOS SUCESSO
+          this.resetForm.reset();
+          
+          // REDIRECIONA PARA LOGIN APOS 2 SEGUNDOS
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 2000);
+        },
+        error: (err) => {
+          this.loading = false;
+          this.error = err.message || 'Erro ao redefinir senha. Tente novamente.';
+        }
+      });
+    }
+  }
   isFieldInvalid(field: string): boolean {
     const control = this.registerForm.get(field);
     return !!(control && control.invalid && (control.dirty || control.touched));
   }
 }
+  isResetFieldInvalid(field: string): boolean {
+    const control = this.resetForm.get(field);
+    return !!(control && control.invalid && (control.dirty || control.touched));
+  }

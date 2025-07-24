@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
 import { QuizService } from '../../services/quiz.service';
-import { AuthService } from '../../services/auth.service';
 import { Question, QuizSession, UserAnswer } from '../../models/question.model';
 
 @Component({
@@ -14,7 +13,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
   template: `
     <div class="main-container" *ngIf="currentSession">
       <div class="container">
-        //BARRA DE PROGRESSÃO
+        <!-- BARRA DE PROGRESSAO -->
         <div class="row mb-4">
           <div class="col-12">
             <div class="mustang-card p-3">
@@ -36,11 +35,11 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
           </div>
         </div>
 
-        <!-- SELECIONADOR DE QUESTOES -->
+        <!-- CONTAINER DE QUESTOES -->
         <div class="row justify-content-center" *ngIf="currentQuestion">
           <div class="col-12 col-lg-10">
             <div class="mustang-card p-5 fade-in">
-              <!--mostrador de imagem ou modelo 3D -->
+              <!-- MOSTRADOR DE IMAGEM OU MODELO 3D -->
               <div class="row mb-4">
                 <div class="col-12 col-md-6 order-md-2 mb-3 mb-md-0">
                   <div class="model-viewer-container" *ngIf="currentQuestion.mediaType === '3d'">
@@ -65,7 +64,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                 <div class="col-12 col-md-6 order-md-1">
                   <h2 class="fw-bold mb-4">{{ currentQuestion.question }}</h2>
 
-                  <!--questionario-->
+                  <!-- OPCOES DE RESPOSTA -->
                   <div class="answer-options">
                     <div 
                       *ngFor="let option of currentQuestion.options; let i = index"
@@ -87,7 +86,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                     </div>
                   </div>
 
-                  <!-- Aviso de resposta não selecionada -->
+                  <!-- AVISO DE RESPOSTA NAO SELECIONADA -->
                   <div *ngIf="showNoAnswerWarning" class="alert alert-warning mt-3 fade-in">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     <strong>Atenção!</strong> Por favor, selecione uma resposta antes de continuar.
@@ -95,7 +94,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                 </div>
               </div>
 
-              <!-- resultados e curiosidades -->
+              <!-- RESULTADOS E CURIOSIDADES -->
               <div *ngIf="showResults" class="mt-4 fade-in">
                 <div class="alert" 
                      [class.alert-success]="selectedAnswer && isCurrentAnswerCorrect" 
@@ -125,7 +124,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                 </div>
               </div>
 
-              <!-- Botão para tentar avançar sem resposta (apenas quando não há resultados) -->
+              <!-- BOTAO PARA AVANCAR SEM RESPOSTA -->
               <div *ngIf="!showResults && !selectedAnswer && timeLeft > 0 && !answerSubmitted" class="text-center mt-4">
                 <button class="btn btn-mustang" (click)="attemptToAdvance()">
                   <i class="fas fa-arrow-right me-2"></i>
@@ -136,7 +135,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
           </div>
         </div>
 
-        <!-- display de pontuação -->
+        <!-- DISPLAY DE PONTUACAO -->
         <div class="row mt-4">
           <div class="col-12">
             <div class="mustang-card p-3 text-center">
@@ -150,7 +149,7 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
       </div>
     </div>
 
-  <!--carregamento-->
+    <!-- TELA DE CARREGAMENTO -->
     <div *ngIf="!currentSession" class="main-container">
       <div class="container text-center">
         <div class="loading-spinner"></div>
@@ -211,7 +210,6 @@ export class QuizComponent implements OnInit, OnDestroy {
 
   constructor(
     private quizService: QuizService,
-    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -284,9 +282,9 @@ export class QuizComponent implements OnInit, OnDestroy {
 
   attemptToAdvance(): void {
     if (!this.selectedAnswer && !this.answerSubmitted) {
-      // Mostra o aviso
+      // MOSTRA O AVISO DE RESPOSTA NAO SELECIONADA
       this.showNoAnswerWarning = true;
-      // Remove o aviso após 3 segundos
+      // REMOVE O AVISO APOS 3 SEGUNDOS
       setTimeout(() => {
         this.showNoAnswerWarning = false;
       }, 3000);
@@ -296,7 +294,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   private submitAnswer(): void {
     if (!this.currentQuestion || this.answerSubmitted) return;
 
-    // Marca que a resposta foi submetida para evitar múltiplas submissões
+    // MARCA QUE A RESPOSTA FOI SUBMETIDA PARA EVITAR MULTIPLAS SUBMISSOES
     this.answerSubmitted = true;
     this.stopTimer();
 
@@ -374,7 +372,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   getResultIcon(): string {
-    if (!this.selectedAnswer || this.selectedAnswer.trim() === '') {
+    if (!this.selectedAnswer) {
       return 'fas fa-exclamation-triangle';
     }
     
@@ -382,7 +380,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   getResultTitle(): string {
-    if (!this.selectedAnswer || this.selectedAnswer.trim() === '') {
+    if (!this.selectedAnswer) {
       return '⚠️ Nenhuma resposta marcada!';
     }
     
@@ -390,7 +388,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   getResultMessage(): string {
-    if (!this.selectedAnswer || this.selectedAnswer.trim() === '') {
+    if (!this.selectedAnswer) {
       return 'Você não selecionou nenhuma alternativa. A correta era: ' + this.currentQuestion?.answer;
     }
     

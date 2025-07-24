@@ -25,7 +25,7 @@ import { User } from '../../models/user.model';
                     style="max-width: 120px;"
                   />
                   <h1 class="display-4 fw-bold mb-3">
-                    Bem-vindo, {{ currentUser?.name }}!
+                    Bem-vindo, {{ currentUser?.username }}!
                   </h1>
                   <p class="lead mb-4">
                     Prepare-se para uma jornada através de 60 anos de história do lendário Ford Mustang.
