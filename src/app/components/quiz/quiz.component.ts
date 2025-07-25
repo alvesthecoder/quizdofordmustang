@@ -111,7 +111,10 @@ import { Question, QuizSession, UserAnswer } from '../../models/question.model';
                 </div>
 
                 <div class="text-center">
-                  <button class="btn btn-mustang" (click)="nextQuestion()">
+                  <button 
+                    class="btn btn-mustang" 
+                    [disabled]="!canAdvance"
+                    (click)="nextQuestion()">
                     <i class="fas fa-arrow-right me-2"></i>
                     {{ isLastQuestion ? 'Ver Resultados' : 'Próxima Pergunta' }}
                   </button>
@@ -310,8 +313,6 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   nextQuestion(): void {
-    if (!this.canAdvance) return;
-    
     if (this.isLastQuestion) {
       this.finishQuiz();
     } else {
