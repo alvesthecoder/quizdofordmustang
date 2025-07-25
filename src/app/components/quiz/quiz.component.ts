@@ -240,13 +240,12 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   private startTimer(): void {
-    this.timeLeft = 15;
     this.stopTimer();
 
     this.timerSubscription = interval(1000).subscribe(() => {
       if (this.timeLeft > 0) {
         this.timeLeft--;
-        if (this.timeLeft <= 0) {
+        if (this.timeLeft === 0) {
           this.stopTimer();
           this.timeUp();
         }
@@ -262,7 +261,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   private timeUp(): void {
-    if (this.canInteract && this.timeLeft <= 0) {
+    if (this.canInteract) {
       this.timeLeft = 0; // Garante que o timer pare em 0
       this.stopTimer(); // Para o timer quando o tempo esgota
       this.submitAnswer();
@@ -274,6 +273,7 @@ export class QuizComponent implements OnInit, OnDestroy {
     if (this.canInteract && !this.showResults && this.authService.canTakeQuiz()) {
       this.selectedAnswer = answer;
       this.stopTimer(); // Para o timer imediatamente quando resposta é selecionada
+      this.timeLeft = 0; // Zera o timer visualmente
       this.submitAnswer();
     }
   }
