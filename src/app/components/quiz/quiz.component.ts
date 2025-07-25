@@ -186,6 +186,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   selectedAnswer: string | null = null;
   showResults = false;
   isCurrentAnswerCorrect = false;
+  timeExpired = false;
   isLastQuestion = false;
   answerSubmitted = false;
 
@@ -226,6 +227,7 @@ export class QuizComponent implements OnInit, OnDestroy {
     this.selectedAnswer = null;
     this.showResults = false;
     this.isCurrentAnswerCorrect = false;
+    this.timeExpired = false;
     this.answerSubmitted = false;
     this.questionStartTime = Date.now();
     this.startTimer();
