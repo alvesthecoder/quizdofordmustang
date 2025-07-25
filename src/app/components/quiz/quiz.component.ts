@@ -277,8 +277,8 @@ export class QuizComponent implements OnInit, OnDestroy {
   private submitAnswer(): void {
     if (!this.currentQuestion || !this.canInteract) return;
 
-    // Garante que o feedback funcione para todos os tipos de usuário
-    this.answerSubmitted = true;
+    // Desabilita interação após submeter resposta
+    this.canInteract = false;
     this.stopTimer();
 
     const timeSpent = Math.round((Date.now() - this.questionStartTime) / 1000);
