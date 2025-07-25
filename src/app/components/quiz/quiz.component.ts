@@ -310,6 +310,8 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   nextQuestion(): void {
+    if (!this.canAdvance) return;
+    
     if (this.isLastQuestion) {
       this.finishQuiz();
     } else {
