@@ -188,7 +188,8 @@ export class QuizComponent implements OnInit, OnDestroy {
   isCurrentAnswerCorrect = false;
   timeExpired = false;
   isLastQuestion = false;
-  answerSubmitted = false;
+  canInteract = true;
+  canAdvance = false;
 
   timeLeft = 15;
   timerSubscription?: Subscription;
@@ -228,7 +229,8 @@ export class QuizComponent implements OnInit, OnDestroy {
     this.showResults = false;
     this.isCurrentAnswerCorrect = false;
     this.timeExpired = false;
-    this.answerSubmitted = false;
+    this.canInteract = true;
+    this.canAdvance = false;
     this.questionStartTime = Date.now();
     this.startTimer();
   }
