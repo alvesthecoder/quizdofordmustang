@@ -358,6 +358,9 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   getResultIcon(): string {
+    if (this.timeExpired) {
+      return 'fas fa-clock';
+    }
     return this.isCurrentAnswerCorrect ? 'fas fa-check-circle' : 'fas fa-times-circle';
   }
 
