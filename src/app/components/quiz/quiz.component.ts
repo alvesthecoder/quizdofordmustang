@@ -259,7 +259,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   private timeUp(): void {
-    if (!this.answerSubmitted) {
+    if (this.canInteract) {
       this.stopTimer(); // Para o timer quando o tempo esgota
       this.submitAnswer();
     }
@@ -267,7 +267,7 @@ export class QuizComponent implements OnInit, OnDestroy {
 
   selectAnswer(answer: string): void {
     // Permite seleção para qualquer usuário logado (admin ou normal)
-    if (!this.answerSubmitted && !this.showResults && this.authService.canTakeQuiz()) {
+    if (this.canInteract && !this.showResults && this.authService.canTakeQuiz()) {
       this.selectedAnswer = answer;
       this.stopTimer(); // Para o timer imediatamente quando resposta é selecionada
       this.submitAnswer();
@@ -275,7 +275,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   private submitAnswer(): void {
-    if (!this.currentQuestion || this.answerSubmitted) return;
+    if (!this.currentQuestion || !this.canInteract) return;
 
     // Garante que o feedback funcione para todos os tipos de usuário
     this.answerSubmitted = true;
