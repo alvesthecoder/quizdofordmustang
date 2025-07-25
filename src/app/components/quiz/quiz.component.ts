@@ -234,6 +234,7 @@ export class QuizComponent implements OnInit, OnDestroy {
     this.timeExpired = false;
     this.canInteract = true;
     this.canAdvance = false;
+    this.timeLeft = 15; // Reseta o timer para 15 segundos
     this.questionStartTime = Date.now();
     this.startTimer();
   }
@@ -243,10 +244,12 @@ export class QuizComponent implements OnInit, OnDestroy {
     this.stopTimer();
 
     this.timerSubscription = interval(1000).subscribe(() => {
-      this.timeLeft--;
-      if (this.timeLeft <= 0) {
-        this.stopTimer();
-        this.timeUp();
+      if (this.timeLeft > 0) {
+        this.timeLeft--;
+        if (this.timeLeft <= 0) {
+          this.stopTimer();
+          this.timeUp();
+        }
       }
     });
   }
@@ -259,7 +262,8 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   private timeUp(): void {
-    if (this.canInteract) {
+    if (this.canInteract && this.timeLeft <= 0) {
+      this.timeLeft = 0; // Garante que o timer pare em 0
       this.stopTimer(); // Para o timer quando o tempo esgota
       this.submitAnswer();
     }
@@ -302,12 +306,14 @@ export class QuizComponent implements OnInit, OnDestroy {
         // Feedback deve aparecer independente do tipo de usuário
         this.isCurrentAnswerCorrect = isCorrect;
         this.showResults = true;
+        this.canAdvance = true; // Libera navegação imediatamente
       },
       error: (error) => {
         console.error('Error submitting answer:', error);
         // Mesmo em caso de erro, mostra o feedback
         this.isCurrentAnswerCorrect = isCorrect;
         this.showResults = true;
+        this.canAdvance = true; // Libera navegação mesmo com erro
       }
     });
   }
